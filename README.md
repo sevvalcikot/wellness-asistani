@@ -61,12 +61,15 @@ src/
 │   ├── RoomScreen.jsx    Yol arkadaşının odası + dükkân + rozetler
 │   ├── GamesScreen.jsx   Oyunlar sekmesi + kişisel plan
 │   ├── PlanScreen.jsx    Başlangıç 2. adım: kısa sorular + kişisel plan
-│   └── JournalScreen.jsx Düşünce Defteri (yapay zeka geri bildirimi)
+│   ├── JournalScreen.jsx Düşünce Defteri (yapay zeka geri bildirimi)
+│   └── AccountScreen.jsx Hesabım: kayıt ol / giriş yap / çıkış
 ├── components/           Tekrar kullanılan parçalar (karakter çizimleri, simgeler, üst çubuk, alt menü)
 ├── state/                Oyunun durumu: XP, jeton, seviye, görevler (GameContext.jsx, rules.js)
 ├── services/             Dış dünyayla konuşan katman
-│   ├── storage.js        Veri saklama (şimdi: tarayıcı, sonra: Supabase)
+│   ├── storage.js        Cihazda saklama (tarayıcı)
+│   ├── supabase.js       Hesap (kayıt/giriş) ve veritabanına kaydetme
 │   └── ai.js             Yapay zeka (Claude Haiku 5.5) + yedek hazır cevaplar
+├── config.js             Supabase bağlantı bilgileri
 ├── router.js             Hangi adreste hangi ekran (#harita, #oda, #oyun-nefes ...)
 ├── App.jsx               Ekranların listesi
 ├── main.jsx              Başlangıç noktası
@@ -134,16 +137,26 @@ Nasıl çalışıyor:
 
 > Not: `npm run dev` ile yerelde çalışırken sunucu fonksiyonu çalışmaz; uygulama yedek cevaplarla açılır. Bu normaldir.
 
-## 7. Sonraki adımlar (yol haritası)
+## 7. Kullanıcı hesabı ve veritabanı (Supabase)
+
+- Supabase projesi: `wellness-asistani` (Frankfurt, ücretsiz plan). Bağlantı bilgisi `src/config.js` içinde.
+  - Oradaki anahtar herkese açık (publishable) türdendir; veriyi koruyan şey RLS kurallarıdır.
+  - Gizli `service_role` anahtarını asla koda yazma.
+- Tablolar:
+  - `ilerleme`: kullanıcı başına XP, jeton, yol arkadaşı ve oyun durumu.
+  - `duygu_gunlugu`: günde bir kayıt.
+  - `affiliate_tiklamalar`: öneri tıklamaları.
+- Her tabloda RLS açık: herkes yalnızca kendi satırlarını görebilir ve değiştirebilir.
+- Hesap açmak isteğe bağlı. Hesapsız oynayan birinin ilerlemesi sadece kendi cihazında durur.
+- Giriş yapılınca her değişiklik 1,5 saniye içinde hesaba kaydedilir (`src/services/supabase.js`).
+- Kayıt olurken kullanıcıdan açık rıza alınır (KVKK: duygu günlüğü sağlıkla ilgili veri sayılabilir).
+
+## 8. Sonraki adımlar (yol haritası)
 
 Sunumdaki sistem mimarisiyle aynı sırada:
 
 1. **Yapay zekayı aç:** API kredisi yükleyip anahtarı Vercel'e ekle (bkz. bölüm 6). Kod hazır.
-2. **Supabase'i bağla**
-   - Kullanıcı girişi (kayıt / giriş).
-   - `services/storage.js` içindeki iki fonksiyonu veritabanına yazacak şekilde değiştir.
-   - Tablolar: `kullanicilar`, `ilerleme`, `duygu_gunlugu`, `rozetler`, `affiliate_tiklamalar`.
-3. **Affiliate**
+2. **Affiliate**
    - Bir mağazanın ortaklık programına katıl.
    - Takip kodlu bağlantıları `data/recommendations.js` içine yaz.
 

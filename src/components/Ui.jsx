@@ -64,7 +64,7 @@ export function AltMenu({ aktif }) {
 
 // "?" düğmesiyle açılan bilgi penceresi: güvenlik notu + ilerlemeyi sıfırlama
 export function BilgiPenceresi({ kapat }) {
-  const { sifirla } = useOyun();
+  const { sifirla, hesap } = useOyun();
   const [emin, setEmin] = useState(false);
   return (
     <div className="perde" onClick={kapat}>
@@ -72,7 +72,8 @@ export function BilgiPenceresi({ kapat }) {
         <h2 id="bilgi-baslik">Uygulama hakkında</h2>
         <p>Bu uygulama oyunlarla iyi oluşu desteklemek ve psikolojik bilgi öğretmek için tasarlandı. <b>Terapi ya da tıbbi tedavi yerine geçmez.</b></p>
         <p>Kendini uzun süredir kötü hissediyorsan bir uzmana danışmak iyi gelebilir. <b>Acil bir durumda 112'yi ara.</b></p>
-        <p className="soluk">Şimdilik tüm ilerlemen yalnızca bu cihazda saklanıyor.</p>
+        <p className="soluk">{hesap ? `Hesabınla girdin (${hesap.email}); ilerlemen hesabına kaydediliyor.` : 'Hesap açmadığın için ilerlemen yalnızca bu cihazda saklanıyor.'}</p>
+        <button className="dugme beyaz" style={{ width: '100%' }} onClick={() => { kapat(); git('/hesap'); }}>{hesap ? 'Hesabım' : 'Hesap aç / Giriş yap'}</button>
         <div className="pencere-dugmeler">
           {emin ? (
             <button className="dugme ikincil" onClick={() => { sifirla(); kapat(); git('/'); }}>Evet, her şeyi sil</button>

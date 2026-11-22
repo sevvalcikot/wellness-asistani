@@ -59,6 +59,7 @@ export default function Onboarding() {
         </div>
         <div style={{ flexGrow: 1 }} />
         <button className="dugme birincil buyuk" onClick={basla}>Maceraya başla</button>
+        <button className="metin-dugme" onClick={() => git('/hesap')}>Zaten hesabın var mı? Giriş yap</button>
       </section>
     </main>
   );

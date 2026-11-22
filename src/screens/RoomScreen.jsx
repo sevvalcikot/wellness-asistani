@@ -5,11 +5,12 @@ import { Jeton, Kilit, RozetSimgesi } from '../components/Icons.jsx';
 import { AltMenu } from '../components/Ui.jsx';
 import { arkadasBul } from '../data/companions.js';
 import { DUKKAN, ROZETLER } from '../data/rewards.js';
+import { git } from '../router.js';
 import { useOyun } from '../state/GameContext.jsx';
 import { seviye } from '../state/rules.js';
 
 export default function RoomScreen() {
-  const { durum, esyaAl } = useOyun();
+  const { durum, esyaAl, hesap } = useOyun();
   const [mesaj, setMesaj] = useState('');
   const arkadas = arkadasBul(durum.arkadas);
   const var_ = (id) => durum.esyalar.includes(id);
@@ -31,6 +32,7 @@ export default function RoomScreen() {
           <div className="alt-yazi">Kazandığın jetonlarla odanı süsle</div>
         </div>
         <div className="hap beyaz buyuk-hap" aria-label={`${durum.jeton} jeton`}><Jeton boyut={20} />{durum.jeton}</div>
+        <button className="hap beyaz buyuk-hap" onClick={() => git('/hesap')} aria-label={hesap ? 'Hesabım' : 'Hesap aç ya da giriş yap'}>{hesap ? 'Hesabım' : 'Giriş'}</button>
       </div>
 
       <div className="oda">

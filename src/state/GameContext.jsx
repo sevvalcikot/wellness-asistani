@@ -1,7 +1,8 @@
 // Oyunun tüm durumu (XP, jeton, rozetler, görevler...) burada tutulur.
 // Ekranlar bu bilgilere useOyun() ile ulaşır.
-import { createContext, useContext, useEffect, useReducer } from 'react';
+import { createContext, useContext, useEffect, useReducer, useState } from 'react';
 import { durumuKaydet, durumuSil, durumuYukle } from '../services/storage.js';
+import { cikisYap, girisYap, kayitliOturum, kayitOl, sunucudanGetir, sunucuyaKaydet } from '../services/supabase.js';
 import { BASLANGIC_JETONU, GOREV_BONUS_XP, GUNLUK_GOREVLER } from '../data/rewards.js';
 import { GUNLUK_XP, dunAnahtari, gunAnahtari, seviye } from './rules.js';
 
@@ -108,12 +109,28 @@ function reducer(durum, eylem) {
     case 'TIKLAMA_KAYDET':
       return { ...d, tiklamalar: [...d.tiklamalar, { oneri: eylem.oneriId, zaman: new Date().toISOString() }] };
 
+    case 'SUNUCUDAN_YUKLE':
+      return gunuKontrolEt({ ...ilkDurum(), ...eylem.durum });
+
     case 'SIFIRLA':
       return ilkDurum();
 
     default:
       return d;
   }
+}
+
+// Hesaba giriş yapılınca: hesaptaki kayıt esas alınır; bu cihazdaki günlük ve tıklama kayıtları da eklenir
+function birlestir(sunucu, yerel) {
+  const gunler = new Map();
+  [...(yerel.gunluk || []), ...(sunucu.gunluk || [])].forEach((g) => gunler.set(g.tarih, g));
+  const tiklar = new Map();
+  [...(sunucu.tiklamalar || []), ...(yerel.tiklamalar || [])].forEach((t) => tiklar.set(`${t.oneri}|${new Date(t.zaman).getTime()}`, t));
+  return {
+    ...sunucu,
+    gunluk: [...gunler.values()].sort((a, b) => a.tarih.localeCompare(b.tarih)),
+    tiklamalar: [...tiklar.values()]
+  };
 }
 
 const OyunContext = createContext(null);
@@ -125,6 +142,62 @@ export function OyunSaglayici({ children }) {
   useEffect(() => {
     durumuKaydet(durum);
   }, [durum]);
+
+  // ---------- Hesap (Supabase) ----------
+  const [hesap, setHesap] = useState(() => kayitliOturum()?.kullanici || null);
+  const [senkron, setSenkron] = useState('bekliyor'); // 'kaydediliyor' | 'tamam' | 'hata'
+
+  // Giriş yapılmışsa her değişiklik 1,5 sn sonra hesaba kaydedilir
+  useEffect(() => {
+    if (!hesap) return;
+    setSenkron('kaydediliyor');
+    const zaman = setTimeout(async () => {
+      try {
+        await sunucuyaKaydet(durum);
+        setSenkron('tamam');
+      } catch {
+        setSenkron('hata'); // internet yoksa veriler cihazda kalır, bir sonraki değişiklikte tekrar denenir
+      }
+    }, 1500);
+    return () => clearTimeout(zaman);
+  }, [durum, hesap]);
+
+  const hesabaBaglan = async (oturum) => {
+    const sunucu = await sunucudanGetir();
+    if (sunucu) gonder({ tur: 'SUNUCUDAN_YUKLE', durum: birlestir(sunucu, durum) });
+    setHesap(oturum.kullanici);
+    return sunucu ? 'hesaptan-yuklendi' : 'cihazdan-aktarildi';
+  };
+
+  const hesapIslemleri = {
+    kayit: async (email, sifre) => {
+      const r = await kayitOl(email, sifre);
+      if (r.oturum) return { ...r, sonuc: await hesabaBaglan(r.oturum) };
+      return r;
+    },
+    giris: async (email, sifre) => {
+      const r = await girisYap(email, sifre);
+      if (r.oturum) {
+        try {
+          return { ...r, sonuc: await hesabaBaglan(r.oturum) };
+        } catch {
+          return { hata: 'Giriş yapıldı ama veriler alınamadı. İnternet bağlantını kontrol et.' };
+        }
+      }
+      return r;
+    },
+    cikis: async () => {
+      try {
+        await sunucuyaKaydet(durum); // çıkmadan önce son hâli kaydet
+      } catch {
+        /* yok say */
+      }
+      await cikisYap();
+      setHesap(null);
+      durumuSil();
+      gonder({ tur: 'SIFIRLA' }); // ortak cihazda başkası verileri görmesin; veriler hesapta güvende
+    }
+  };
 
   const eylemler = {
     arkadasSec: (id) => gonder({ tur: 'ARKADAS_SEC', id }),
@@ -140,7 +213,7 @@ export function OyunSaglayici({ children }) {
     }
   };
 
-  return <OyunContext.Provider value={{ durum, ...eylemler }}>{children}</OyunContext.Provider>;
+  return <OyunContext.Provider value={{ durum, ...eylemler, hesap, senkron, hesapIslemleri }}>{children}</OyunContext.Provider>;
 }
 
 export function useOyun() {
