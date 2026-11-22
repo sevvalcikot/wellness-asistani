@@ -152,6 +152,9 @@ Nasıl çalışıyor:
 - Hesap açmak isteğe bağlı. Hesapsız oynayan birinin ilerlemesi sadece kendi cihazında durur.
 - Giriş yapılınca her değişiklik 1,5 saniye içinde hesaba kaydedilir (`src/services/supabase.js`).
 - Kayıt olurken kullanıcıdan açık rıza alınır (KVKK: duygu günlüğü sağlıkla ilgili veri sayılabilir).
+- **Aydınlatma metni:** `#gizlilik` adresinde (`src/screens/PrivacyScreen.jsx`). Hangi veri, neden, nerede, ne kadar süre, KVKK hakları.
+- **Hesabı silme:** Hesabım → "Hesabımı ve verilerimi sil". Veritabanındaki `hesabimi_sil()` fonksiyonu yalnızca giriş yapan kişinin kendi hesabını siler; bağlı tüm tablolar (`ON DELETE CASCADE`) birlikte silinir.
+  - Supabase güvenlik denetimi bu fonksiyon için bir uyarı gösterir ("giriş yapmış kullanıcı çalıştırabilir"). Bu bilerek yapıldı: fonksiyon yalnızca `auth.uid()` ile kişinin kendi hesabına dokunur.
 - **E-posta onayı:** Onay bağlantısı kullanıcıyı kaydolduğu siteye geri getirir ve otomatik giriş yaptırır. Bunun için Supabase → Authentication → URL Configuration'da:
   - **Site URL:** `https://wellness-asistani.vercel.app`
   - **Redirect URLs:** `https://wellness-asistani.vercel.app/**` ve `https://sevvalcikot.github.io/wellness-asistani/**`

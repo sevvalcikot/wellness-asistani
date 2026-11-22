@@ -96,6 +96,18 @@ export async function cikisYap() {
   oturumYaz(null);
 }
 
+// KVKK: hesabı ve hesaptaki tüm verileri kalıcı olarak siler (veritabanındaki hesabimi_sil fonksiyonu).
+// Başarılı olursa cihazdaki oturum da silinir. Hata olursa { hata } döner.
+export async function hesabimiSil() {
+  try {
+    await rest('rpc/hesabimi_sil', { method: 'POST', govde: {} });
+    oturumYaz(null);
+    return { tamam: true };
+  } catch {
+    return { hata: 'Hesap silinemedi. İnternet bağlantını kontrol edip tekrar dene.' };
+  }
+}
+
 // Süresi dolmak üzereyse oturumu yeniler; giriş yoksa null döner
 export async function gecerliOturum() {
   const o = oturumOku();

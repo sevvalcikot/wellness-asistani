@@ -2,7 +2,7 @@
 // Ekranlar bu bilgilere useOyun() ile ulaşır.
 import { createContext, useContext, useEffect, useReducer, useState } from 'react';
 import { durumuKaydet, durumuSil, durumuYukle } from '../services/storage.js';
-import { bekleyenOnayiTamamla, cikisYap, girisYap, kayitliOturum, kayitOl, sunucudanGetir, sunucuyaKaydet } from '../services/supabase.js';
+import { bekleyenOnayiTamamla, cikisYap, girisYap, hesabimiSil, kayitliOturum, kayitOl, sunucudanGetir, sunucuyaKaydet } from '../services/supabase.js';
 import { BASLANGIC_JETONU, GOREV_BONUS_XP, GUNLUK_GOREVLER } from '../data/rewards.js';
 import { GUNLUK_XP, dunAnahtari, gunAnahtari, seviye } from './rules.js';
 
@@ -212,6 +212,15 @@ export function OyunSaglayici({ children }) {
       setHesap(null);
       durumuSil();
       gonder({ tur: 'SIFIRLA' }); // ortak cihazda başkası verileri görmesin; veriler hesapta güvende
+    },
+    // KVKK: hesabı ve tüm verileri kalıcı olarak sil (hem sunucudan hem bu cihazdan)
+    sil: async () => {
+      const r = await hesabimiSil();
+      if (r.hata) return r;
+      setHesap(null);
+      durumuSil();
+      gonder({ tur: 'SIFIRLA' });
+      return r;
     }
   };
 

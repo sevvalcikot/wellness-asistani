@@ -488,3 +488,11 @@ input.metin-alani { padding: 11px 14px; }
 .onay-kutusu { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; font-weight: 700; line-height: 1.45; }
 .onay-kutusu input { width: 20px; height: 20px; margin-top: 1px; flex-shrink: 0; accent-color: var(--vurgu); }
 .kucuk-bildirim.hata { border-color: #B42318; background: #FFF1EE; color: #8A1C12; }
+
+/* ---------- Hesap silme ve aydınlatma metni ---------- */
+.dugme.tehlike { background: #D9472B; color: #FFFFFF; }
+.metin-dugme.tehlike-yazi { color: #B42318; font-size: 14px; padding: 6px 0; align-self: flex-start; cursor: pointer; }
+.metin-baglanti { color: #1D5FA8; font-size: 13px; font-weight: 800; text-decoration: underline; }
+.silme-onayi { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; padding: 10px 12px; border: 2px solid #B42318; border-radius: 14px; background: #FFF1EE; }
+.gizlilik-baslik { margin: 0; font-family: 'Baloo 2', sans-serif; font-size: 18px; line-height: 1.2; }
+.gizlilik-liste { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }

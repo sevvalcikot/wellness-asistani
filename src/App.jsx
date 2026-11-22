@@ -11,6 +11,7 @@ import MapScreen from './screens/MapScreen.jsx';
 import MoodJournalScreen from './screens/MoodJournalScreen.jsx';
 import Onboarding from './screens/Onboarding.jsx';
 import PlanScreen from './screens/PlanScreen.jsx';
+import PrivacyScreen from './screens/PrivacyScreen.jsx';
 import QuizGame from './screens/QuizGame.jsx';
 import RoomScreen from './screens/RoomScreen.jsx';
 import ThoughtGame from './screens/ThoughtGame.jsx';
@@ -20,6 +21,7 @@ const EKRANLAR = {
   '/baslangic': Onboarding,
   '/plan': PlanScreen,
   '/hesap': AccountScreen,
+  '/gizlilik': PrivacyScreen,
   '/defter': JournalScreen,
   '/harita': MapScreen,
   '/oyunlar': GamesScreen,
@@ -37,8 +39,8 @@ export default function App() {
   const { durum } = useOyun();
 
   // Yol arkadaşı seçilmediyse önce başlangıç ekranı; bilinmeyen adresler haritaya gider
-  // (Hesap ekranı, yol arkadaşı seçmeden de açılabilir: başka cihazda açılmış hesaba giriş için)
-  const hedef = !durum.arkadas && yol !== '/hesap' ? '/baslangic' : EKRANLAR[yol] ? yol : '/harita';
+  // (Hesap ve aydınlatma metni, yol arkadaşı seçmeden de açılabilir: başka cihazda açılmış hesaba giriş için)
+  const hedef = !durum.arkadas && yol !== '/hesap' && yol !== '/gizlilik' ? '/baslangic' : EKRANLAR[yol] ? yol : '/harita';
   useEffect(() => {
     if (hedef !== yol) git(hedef);
   }, [hedef, yol]);

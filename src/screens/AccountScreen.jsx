@@ -20,6 +20,18 @@ export default function AccountScreen() {
   const [riza, setRiza] = useState(false);
   const [bekliyor, setBekliyor] = useState(false);
   const [mesaj, setMesaj] = useState(null); // { tur: 'hata' | 'bilgi', metin }
+  const [silmeAdimi, setSilmeAdimi] = useState(false); // "Emin misin?" adımı
+  const [siliniyor, setSiliniyor] = useState(false);
+
+  const hesabiSil = async () => {
+    setSiliniyor(true);
+    const r = await hesapIslemleri.sil();
+    setSiliniyor(false);
+    setSilmeAdimi(false);
+    if (r.hata) return setMesaj({ tur: 'hata', metin: r.hata });
+    setMod('kayit');
+    setMesaj({ tur: 'bilgi', metin: 'Hesabın ve tüm verilerin kalıcı olarak silindi.' });
+  };
 
   useEffect(() => {
     if (onayMesaji) setMesaj(onayMesaji);
@@ -63,6 +75,16 @@ export default function AccountScreen() {
             <div className="govde soluk" role="status">{SENKRON_METNI[senkron]}</div>
             <button className="dugme beyaz" onClick={hesapIslemleri.cikis}>Çıkış yap</button>
             <p className="alt-yazi" style={{ margin: 0 }}>Çıkış yapınca veriler bu cihazdan silinir ama hesabında güvende kalır.</p>
+            {mesaj?.tur === 'hata' && <div className="kucuk-bildirim hata" role="alert">{mesaj.metin}</div>}
+            {silmeAdimi ? (
+              <div className="silme-onayi" role="group" aria-label="Hesap silme onayı">
+                <div className="govde"><b>Emin misin?</b> Hesabın, oyun ilerlemen, duygu günlüğün ve tüm kayıtların kalıcı olarak silinir. Bu işlem geri alınamaz.</div>
+                <button className="dugme tehlike" onClick={hesabiSil} disabled={siliniyor}>{siliniyor ? 'Siliniyor…' : 'Evet, kalıcı olarak sil'}</button>
+                <button className="dugme beyaz" onClick={() => setSilmeAdimi(false)} disabled={siliniyor}>Vazgeç</button>
+              </div>
+            ) : (
+              <button className="metin-dugme tehlike-yazi" onClick={() => { setMesaj(null); setSilmeAdimi(true); }}>Hesabımı ve verilerimi sil</button>
+            )}
           </section>
         ) : (
           <section className="beyaz-panel" style={{ marginTop: 0, gap: 12 }}>
@@ -81,13 +103,14 @@ export default function AccountScreen() {
                   <span>Oyun ilerlememin ve duygu günlüğümün hesabımda saklanmasına açık rıza veriyorum. Bu verileri yalnızca ben görebilirim.</span>
                 </label>
               )}
+              {mod === 'kayit' && <a className="metin-baglanti" href="#gizlilik">Aydınlatma metnini oku</a>}
               {mesaj && <div className={'kucuk-bildirim' + (mesaj.tur === 'hata' ? ' hata' : '')} role={mesaj.tur === 'hata' ? 'alert' : 'status'}>{mesaj.metin}</div>}
               <button type="submit" className="dugme birincil" disabled={bekliyor}>{bekliyor ? 'Bekle…' : mod === 'kayit' ? 'Hesap aç' : 'Giriş yap'}</button>
             </form>
           </section>
         )}
 
-        <p className="alt-yazi" style={{ margin: 0 }}>Veriler Supabase üzerinde, Avrupa Birliği'ndeki (Frankfurt) sunucularda saklanır. Hesap açmak zorunlu değildir; hesapsız da oynayabilirsin.</p>
+        <p className="alt-yazi" style={{ margin: 0 }}>Veriler Supabase üzerinde, Avrupa Birliği'ndeki (Frankfurt) sunucularda saklanır. Hesap açmak zorunlu değildir; hesapsız da oynayabilirsin. <a className="metin-baglanti" href="#gizlilik">Aydınlatma metni</a></p>
       </div>
       <div style={{ flexGrow: 1, minHeight: 24 }} />
     </main>
