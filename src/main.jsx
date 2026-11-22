@@ -3,7 +3,11 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
 import { OyunSaglayici } from './state/GameContext.jsx';
+import { adrestekiOnayiAl } from './services/supabase.js';
 import './styles.css';
+
+// E-posta onay bağlantısından gelindiyse giriş bilgisini adresten al (uygulama açılmadan önce)
+adrestekiOnayiAl();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

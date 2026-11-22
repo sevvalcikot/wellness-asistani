@@ -1,6 +1,6 @@
 // Hesabım: kayıt ol / giriş yap / çıkış yap
 // Hesap açmak isteğe bağlıdır. Hesapla giriş yapınca ilerleme ve günlük başka cihazlarda da görünür.
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Companion from '../components/Companion.jsx';
 import { git } from '../router.js';
 import { useOyun } from '../state/GameContext.jsx';
@@ -13,13 +13,17 @@ const SENKRON_METNI = {
 };
 
 export default function AccountScreen() {
-  const { durum, hesap, senkron, hesapIslemleri } = useOyun();
+  const { durum, hesap, senkron, hesapIslemleri, onayMesaji } = useOyun();
   const [mod, setMod] = useState('kayit');
   const [email, setEmail] = useState('');
   const [sifre, setSifre] = useState('');
   const [riza, setRiza] = useState(false);
   const [bekliyor, setBekliyor] = useState(false);
   const [mesaj, setMesaj] = useState(null); // { tur: 'hata' | 'bilgi', metin }
+
+  useEffect(() => {
+    if (onayMesaji) setMesaj(onayMesaji);
+  }, [onayMesaji]);
 
   const gonder = async (e) => {
     e.preventDefault();
@@ -55,6 +59,7 @@ export default function AccountScreen() {
           <section className="beyaz-panel" style={{ marginTop: 0 }}>
             <div className="ust-etiket" style={{ color: '#2E8A45' }}>GİRİŞ YAPILDI</div>
             <div className="govde" style={{ fontSize: 16, wordBreak: 'break-all' }}><b>{hesap.email}</b></div>
+            {mesaj?.tur === 'bilgi' && <div className="kucuk-bildirim" role="status">{mesaj.metin}</div>}
             <div className="govde soluk" role="status">{SENKRON_METNI[senkron]}</div>
             <button className="dugme beyaz" onClick={hesapIslemleri.cikis}>Çıkış yap</button>
             <p className="alt-yazi" style={{ margin: 0 }}>Çıkış yapınca veriler bu cihazdan silinir ama hesabında güvende kalır.</p>

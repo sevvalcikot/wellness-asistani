@@ -115,6 +115,8 @@ En kolay yol **Vercel**:
 2. <https://vercel.com> → GitHub ile giriş → **Add New → Project** → bu depoyu seç → **Deploy**.
 3. Vercel ayarları kendisi tanır (Framework: Vite). Sonunda `...vercel.app` diye bir adres verir.
 
+**Yedek adres (GitHub Pages):** `.github/workflows/github-pages.yml` her gönderimde siteyi <https://sevvalcikot.github.io/wellness-asistani/> adresine de yükler. Bazı ağlar `vercel.app` adreslerini açamayabiliyor; o zaman bu adres kullanılır. Orada sunucu fonksiyonu olmadığı için yapay zeka her zaman hazır cevaplarla çalışır.
+
 Telefonda bu adresi açıp **Paylaş → Ana Ekrana Ekle** (iPhone) ya da **⋮ → Uygulamayı yükle** (Android) dersen uygulama simgesiyle telefona yüklenir.
 
 ## 6. Yapay zeka (Claude Haiku 5.5) ve yedek sistem
@@ -150,6 +152,10 @@ Nasıl çalışıyor:
 - Hesap açmak isteğe bağlı. Hesapsız oynayan birinin ilerlemesi sadece kendi cihazında durur.
 - Giriş yapılınca her değişiklik 1,5 saniye içinde hesaba kaydedilir (`src/services/supabase.js`).
 - Kayıt olurken kullanıcıdan açık rıza alınır (KVKK: duygu günlüğü sağlıkla ilgili veri sayılabilir).
+- **E-posta onayı:** Onay bağlantısı kullanıcıyı kaydolduğu siteye geri getirir ve otomatik giriş yaptırır. Bunun için Supabase → Authentication → URL Configuration'da:
+  - **Site URL:** `https://wellness-asistani.vercel.app`
+  - **Redirect URLs:** `https://wellness-asistani.vercel.app/**` ve `https://sevvalcikot.github.io/wellness-asistani/**`
+  - Supabase'in ücretsiz e-posta servisi saatte çok az e-posta gönderir ve yalnızca proje ekibindeki adreslere ulaşır. Herkesin hesap açabilmesi için ya **Confirm email** kapatılır ya da kendi e-posta servisi (SMTP) bağlanır.
 
 ## 8. Sonraki adımlar (yol haritası)
 

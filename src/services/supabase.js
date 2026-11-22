@@ -69,8 +69,12 @@ async function authIstegi(yol, govde, token) {
 }
 
 // ---------- Hesap işlemleri ----------
+// Onay e-postasındaki bağlantı kullanıcıyı kaydolduğu sayfaya geri getirsin
+// (Supabase'de "Redirect URLs" listesinde olmalı; yoksa Site URL'e gider)
+const geriDonusAdresi = () => window.location.origin + window.location.pathname;
+
 export async function kayitOl(email, sifre) {
-  const r = await authIstegi('signup', { email, password: sifre });
+  const r = await authIstegi(`signup?redirect_to=${encodeURIComponent(geriDonusAdresi())}`, { email, password: sifre });
   if (!r.ok) return { hata: hataMetni(r.veri, r.durum) };
   const oturum = oturumuDuzenle(r.veri);
   if (!oturum) return { onayGerekli: true }; // e-posta onayı açıksa önce onaylanmalı
@@ -108,6 +112,41 @@ export async function gecerliOturum() {
 }
 
 export const kayitliOturum = () => oturumOku();
+
+// ---------- E-posta onayından dönüş ----------
+// Onay bağlantısı kullanıcıyı ".../#access_token=...&refresh_token=..." adresine getirir.
+// Uygulama açılmadan ÖNCE bu bilgiyi adresten alıp saklarız ve adresi #hesap yaparız
+// (giriş bilgisi adres çubuğunda kalmasın, yönlendirici de şaşırmasın).
+let bekleyenOnay = null;
+
+export function adrestekiOnayiAl() {
+  const h = window.location.hash || '';
+  if (!h.includes('access_token=') && !h.includes('error=')) return;
+  const p = new URLSearchParams(h.replace(/^#\/?/, ''));
+  bekleyenOnay = p.get('access_token')
+    ? { access_token: p.get('access_token'), refresh_token: p.get('refresh_token'), expires_in: Number(p.get('expires_in')) || 3600 }
+    : { hata: true };
+  history.replaceState(null, '', `${window.location.pathname}${window.location.search}#hesap`);
+}
+
+// Saklanan bilgiyle oturumu tamamlar: kullanıcı bilgisini Supabase'den alır, oturumu kaydeder
+export async function bekleyenOnayiTamamla() {
+  const b = bekleyenOnay;
+  bekleyenOnay = null;
+  if (!b || b.hata) return b ? { hata: true } : null;
+  try {
+    const cevap = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      headers: { apikey: SUPABASE_ANAHTAR, Authorization: `Bearer ${b.access_token}` }
+    });
+    if (!cevap.ok) return { hata: true };
+    const user = await cevap.json();
+    const oturum = oturumuDuzenle({ ...b, user });
+    oturumYaz(oturum);
+    return { oturum };
+  } catch {
+    return { hata: true };
+  }
+}
 
 // ---------- Veritabanı (REST) ----------
 async function rest(yol, { method = 'GET', govde, prefer } = {}) {

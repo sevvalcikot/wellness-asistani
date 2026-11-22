@@ -2,7 +2,7 @@
 // Ekranlar bu bilgilere useOyun() ile ulaşır.
 import { createContext, useContext, useEffect, useReducer, useState } from 'react';
 import { durumuKaydet, durumuSil, durumuYukle } from '../services/storage.js';
-import { cikisYap, girisYap, kayitliOturum, kayitOl, sunucudanGetir, sunucuyaKaydet } from '../services/supabase.js';
+import { bekleyenOnayiTamamla, cikisYap, girisYap, kayitliOturum, kayitOl, sunucudanGetir, sunucuyaKaydet } from '../services/supabase.js';
 import { BASLANGIC_JETONU, GOREV_BONUS_XP, GUNLUK_GOREVLER } from '../data/rewards.js';
 import { GUNLUK_XP, dunAnahtari, gunAnahtari, seviye } from './rules.js';
 
@@ -169,6 +169,22 @@ export function OyunSaglayici({ children }) {
     return sunucu ? 'hesaptan-yuklendi' : 'cihazdan-aktarildi';
   };
 
+  // E-posta onay bağlantısından gelindiyse otomatik giriş yap
+  const [onayMesaji, setOnayMesaji] = useState(null);
+  useEffect(() => {
+    bekleyenOnayiTamamla().then(async (r) => {
+      if (!r) return;
+      if (r.hata) return setOnayMesaji({ tur: 'hata', metin: 'Onay bağlantısının süresi dolmuş olabilir. E-postanla giriş yapmayı dene.' });
+      try {
+        await hesabaBaglan(r.oturum);
+        setOnayMesaji({ tur: 'bilgi', metin: 'E-postan onaylandı, giriş yapıldı. Hoş geldin!' });
+      } catch {
+        setHesap(r.oturum.kullanici);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const hesapIslemleri = {
     kayit: async (email, sifre) => {
       const r = await kayitOl(email, sifre);
@@ -213,7 +229,7 @@ export function OyunSaglayici({ children }) {
     }
   };
 
-  return <OyunContext.Provider value={{ durum, ...eylemler, hesap, senkron, hesapIslemleri }}>{children}</OyunContext.Provider>;
+  return <OyunContext.Provider value={{ durum, ...eylemler, hesap, senkron, hesapIslemleri, onayMesaji }}>{children}</OyunContext.Provider>;
 }
 
 export function useOyun() {
