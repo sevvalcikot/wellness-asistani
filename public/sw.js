@@ -1,7 +1,7 @@
 // Servis çalışanı (service worker): uygulamanın telefona yüklenebilmesini
 // ve internet yokken de açılabilmesini sağlar.
 // Uygulamayı güncellediğinde SURUM'ü bir artır, eski önbellek silinsin.
-const SURUM = 'wellness-v1';
+const SURUM = 'wellness-v2';
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(SURUM).then((c) => c.addAll(['./', './index.html', './manifest.webmanifest'])));
@@ -19,9 +19,17 @@ self.addEventListener('fetch', (e) => {
   const istek = e.request;
   if (istek.method !== 'GET' || new URL(istek.url).origin !== self.location.origin) return;
 
-  // Sayfalar: önce internetten dene, olmazsa önbellekten aç
+  // Sayfalar: önce internetten dene (ve en yeni hâlini sakla), olmazsa önbellekten aç
   if (istek.mode === 'navigate') {
-    e.respondWith(fetch(istek).catch(() => caches.match('./index.html')));
+    e.respondWith(
+      fetch(istek)
+        .then((cevap) => {
+          const kopya = cevap.clone();
+          caches.open(SURUM).then((c) => c.put('./index.html', kopya));
+          return cevap;
+        })
+        .catch(() => caches.match('./index.html'))
+    );
     return;
   }
 
