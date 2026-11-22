@@ -1,0 +1,27 @@
+# Supabase'in ücretsiz planı, 7 gün hiç kullanılmayan projeyi duraklatır.
+# Bu görev her gün veritabanına küçük bir istek atarak projeyi "uyanık" tutar.
+# (Herkese açık anahtar kullanılır; RLS yüzünden hiçbir kullanıcı verisi okunmaz.)
+# Not: GitHub, depoda 60 gün hiç değişiklik olmazsa zamanlanmış görevleri durdurur;
+# o zaman Actions sekmesinden yeniden etkinleştirmek yeterli.
+
+name: Supabase uyanık tut
+
+on:
+  schedule:
+    - cron: '17 6 * * *' # her gün 09:17 (Türkiye saati)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dokun:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Veritabanına küçük bir istek gönder
+        run: |
+          kod=$(curl -s -o /dev/null -w '%{http_code}' \
+            "https://isxhrsynzavpqtfjqvaj.supabase.co/rest/v1/ilerleme?select=kullanici_id&limit=1" \
+            -H "apikey: sb_publishable_taIHKbTfUnq-5RDynmw0fQ_RBgSf_Nt")
+          echo "Supabase cevabı: $kod"
+          test "$kod" = "200"
