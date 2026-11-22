@@ -1,6 +1,7 @@
 // Güvenlik: kriz ifadelerini algılama.
-// Kullanıcının yazdığı metinde bu ifadelerden biri varsa
-// uygulama doğrudan destek ekranını (112) gösterir.
+// Bu ifadelerden biri yazılırsa yapay zeka HİÇ çağrılmaz;
+// kullanıcıya doğrudan destek ekranı (112) gösterilir.
+// Hem uygulamada hem sunucuda (api/yapay-zeka.js) aynı liste kullanılır.
 
 const KRIZ_KALIPLARI = [
   'intihar',

@@ -1,9 +1,10 @@
-// Düşünce Defteri: kullanıcı kendi düşüncesini yazar, Bulut ipuçlarıyla değerlendirir.
+// Düşünce Defteri: kullanıcı kendi düşüncesini yazar, Bulut (yapay zeka) değerlendirir.
+// Yapay zeka kapalıysa hazır ipuçlarıyla cevap verilir.
 import { useState } from 'react';
 import Companion from '../components/Companion.jsx';
-import { KrizPenceresi, OyunUstu } from '../components/Ui.jsx';
+import { KaynakEtiketi, KrizPenceresi, OyunUstu } from '../components/Ui.jsx';
 import { arkadasBul } from '../data/companions.js';
-import { kendiDusunceniAnaliz } from '../services/rehber.js';
+import { kendiDusunceniAnaliz } from '../services/ai.js';
 import { useOyun } from '../state/GameContext.jsx';
 
 const DEFTER_XP = 10;
@@ -58,6 +59,7 @@ export default function JournalScreen() {
 
         {sonuc && (
           <div className="geri-bildirim pat" style={{ margin: 0, background: sonuc.tuzak ? '#FFE1D6' : '#C9EFC9' }} role="status">
+            <KaynakEtiketi kaynak={sonuc.kaynak} />
             <div className="beyaz-kutu" style={{ fontWeight: 700 }}>“{metin.trim()}”</div>
             <div className="baslik-orta">
               {sonuc.tuzak === true ? `Bir tuzak olabilir: ${sonuc.tuzakAdi || 'düşünce tuzağı'}` : sonuc.tuzak === false ? 'Bu oldukça gerçekçi bir düşünce' : 'Birlikte düşünelim'}

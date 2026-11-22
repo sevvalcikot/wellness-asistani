@@ -1,6 +1,6 @@
 // Oyunlar sekmesi: açılmış oyunları tekrar oynamak için
 import { Kilit, RozetSimgesi } from '../components/Icons.jsx';
-import { AltMenu } from '../components/Ui.jsx';
+import { AltMenu, KaynakEtiketi } from '../components/Ui.jsx';
 import { BOLUMLER, bolumBul } from '../data/levels.js';
 import { git } from '../router.js';
 import { useOyun } from '../state/GameContext.jsx';
@@ -27,7 +27,7 @@ export default function GamesScreen() {
       <div className="icerik-dolgu" style={{ gap: 12 }}>
         {durum.plan ? (
           <div className="beyaz-panel" style={{ marginTop: 0 }}>
-            <div className="satir-ara"><span className="ust-etiket" style={{ color: '#2E8A45' }}>KİŞİSEL PLANIM</span></div>
+            <div className="satir-ara"><span className="ust-etiket" style={{ color: '#2E8A45' }}>KİŞİSEL PLANIM</span><KaynakEtiketi kaynak={durum.plan.kaynak} /></div>
             {durum.plan.adimlar.map((a, i) => (
               <div key={i} className="govde"><b>{i + 1}. {bolumBul(a.oyun)?.oyun}:</b> {a.metin}</div>
             ))}
@@ -41,7 +41,7 @@ export default function GamesScreen() {
 
         <button className="oyun-karti" style={{ background: '#D7F5C8' }} onClick={() => git('/defter')}>
           <span className="oyun-simge"><RozetSimgesi simge="tuzak" /></span>
-          <span className="oyun-yazi"><b>Düşünce Defteri</b><small>Kendi düşünceni yaz, Bulut hangi tuzağa benzediğini söylesin.</small></span>
+          <span className="oyun-yazi"><b>Düşünce Defteri</b><small>Kendi düşünceni yaz, yapay zeka destekli geri bildirim al.</small></span>
           <span className="oyun-git">Yaz</span>
         </button>
 

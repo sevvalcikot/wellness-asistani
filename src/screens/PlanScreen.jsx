@@ -1,11 +1,11 @@
-// Başlangıç 2. adım: kısa sorular + kişisel plan
+// Başlangıç 2. adım: kısa sorular + kişisel plan (yapay zeka; kapalıysa hazır plan)
 import { useState } from 'react';
 import Companion from '../components/Companion.jsx';
-import { KrizPenceresi } from '../components/Ui.jsx';
+import { KaynakEtiketi, KrizPenceresi } from '../components/Ui.jsx';
 import { arkadasBul } from '../data/companions.js';
 import { bolumBul } from '../data/levels.js';
 import { git } from '../router.js';
-import { kisiselPlan } from '../services/rehber.js';
+import { kisiselPlan } from '../services/ai.js';
 import { useOyun } from '../state/GameContext.jsx';
 
 const ODAKLAR = ['Sınav ve ders stresi', 'Kaygı ve endişe', 'Uyku ve yorgunluk', 'İlişkiler ve yalnızlık', 'Sadece merak ediyorum'];
@@ -77,6 +77,7 @@ export default function PlanScreen() {
       {plan && (
         <div className="icerik-dolgu pat" style={{ gap: 14 }}>
           <div className="beyaz-panel" style={{ marginTop: 0 }}>
+            <KaynakEtiketi kaynak={plan.kaynak} />
             <div className="govde" style={{ fontSize: 15 }}>{plan.mesaj}</div>
           </div>
           {plan.adimlar.map((a, i) => {

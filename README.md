@@ -1,6 +1,6 @@
-# Wellness Asistanı
+# AI Wellness Asistanı
 
-Oyun oynayarak düşünce tuzaklarını ve nefes egzersizlerini öğreten, affiliate gelir modelli iyi oluş uygulaması.
+Oyun oynayarak düşünce tuzaklarını ve nefes egzersizlerini öğreten, yapay zeka destekli iyi oluş uygulaması.
 Sistem Analizi ve Tasarımı-I dersi, **Proje 02** kapsamında geliştiriliyor.
 
 - **Ön yüz:** React
@@ -56,16 +56,20 @@ src/
 │   ├── QuizGame.jsx      Bilgi Kulesi
 │   ├── WinScreen.jsx     Bölüm sonu ödülleri
 │   ├── RoomScreen.jsx    Yol arkadaşının odası + dükkân + rozetler
-│   └── GamesScreen.jsx   Oyunlar sekmesi
+│   ├── GamesScreen.jsx   Oyunlar sekmesi + kişisel plan
+│   ├── PlanScreen.jsx    Başlangıç 2. adım: kısa sorular + kişisel plan
+│   └── JournalScreen.jsx Düşünce Defteri (yapay zeka geri bildirimi)
 ├── components/           Tekrar kullanılan parçalar (karakter çizimleri, simgeler, üst çubuk, alt menü)
 ├── state/                Oyunun durumu: XP, jeton, seviye, görevler (GameContext.jsx, rules.js)
 ├── services/             Dış dünyayla konuşan katman
 │   ├── storage.js        Veri saklama (şimdi: tarayıcı, sonra: Supabase)
-│   └── rehber.js         Bulut'un geri bildirimleri ve kişisel plan (kurallara dayalı)
+│   └── ai.js             Yapay zeka (Claude Haiku 5.5) + yedek hazır cevaplar
 ├── router.js             Hangi adreste hangi ekran (#harita, #oda, #oyun-nefes ...)
 ├── App.jsx               Ekranların listesi
 ├── main.jsx              Başlangıç noktası
 └── styles.css            Tüm görünüm (renkler en üstte)
+api/
+└── yapay-zeka.js         Vercel sunucu fonksiyonu: yapay zekaya güvenli istek
 public/
 ├── manifest.webmanifest  PWA tanımı (uygulama adı, simge, renk)
 ├── sw.js                 Servis çalışanı (internetsiz açılma)
@@ -104,17 +108,32 @@ En kolay yol **Vercel**:
 
 Telefonda bu adresi açıp **Paylaş → Ana Ekrana Ekle** (iPhone) ya da **⋮ → Uygulamayı yükle** (Android) dersen uygulama simgesiyle telefona yüklenir.
 
-## 6. Güvenlik
+## 6. Yapay zeka (Claude Haiku 5.5) ve yedek sistem
 
-- `src/data/safety.js` dosyasında kriz ifadeleri listesi var.
-- Plan ya da Düşünce Defteri'ne bu ifadelerden biri yazılırsa uygulama destek penceresini gösterir: 112 ve güvendiği kişilerle konuşma önerisi.
-- Uygulama terapi yerine geçmez. Bu bilgi "?" düğmesindeki pencerede de yazar.
+Yapay zeka iki yerde kullanılıyor:
+- **Başlangıç 2. adım:** Kullanıcının cevaplarına göre kişisel plan.
+- **Düşünce Defteri:** Kullanıcının yazdığı düşüncedeki tuzağı bulma.
+
+Nasıl çalışıyor:
+- Uygulama yapay zekaya doğrudan gitmez; `api/yapay-zeka.js` adlı Vercel sunucu fonksiyonuna gider.
+- API anahtarı sadece Vercel'de, `ANTHROPIC_API_KEY` ortam değişkeninde durur. **Anahtarı asla koda yazma.**
+- **Yedek sistem:** Anahtar yoksa, kredi bittiyse ya da internet yoksa uygulama kurallara dayalı hazır cevaplara döner. Cevabın üstünde "Hazır cevap" etiketi görünür. Şu an maliyet kontrolü için bu modda çalışıyor.
+- **Güvenlik:** `src/data/safety.js` dosyasındaki kriz ifadelerinden biri yazılırsa yapay zeka hiç çağrılmaz. Kullanıcıya destek penceresi (112) gösterilir.
+
+**Yapay zekayı açmak için:**
+1. console.anthropic.com'dan kredi yükle (en az 5 dolar, 1 yıl geçerli).
+2. Bir API anahtarı oluştur.
+3. Vercel → proje → Settings → Environment Variables bölümüne `ANTHROPIC_API_KEY` adıyla ekle.
+4. Projeyi yeniden yayınla (Redeploy).
+
+> Not: `npm run dev` ile yerelde çalışırken sunucu fonksiyonu çalışmaz; uygulama yedek cevaplarla açılır. Bu normaldir.
 
 ## 7. Sonraki adımlar (yol haritası)
 
 Sunumdaki sistem mimarisiyle aynı sırada:
 
-1. **Supabase'i bağla**
+1. **Yapay zekayı aç:** API kredisi yükleyip anahtarı Vercel'e ekle (bkz. bölüm 6). Kod hazır.
+2. **Supabase'i bağla**
    - Kullanıcı girişi (kayıt / giriş).
    - `services/storage.js` içindeki iki fonksiyonu veritabanına yazacak şekilde değiştir.
    - Tablolar: `kullanicilar`, `ilerleme`, `dusunce_kartlari`, `rozetler`, `affiliate_tiklamalar`.

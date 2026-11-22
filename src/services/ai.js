@@ -1,11 +1,35 @@
-// Rehber: Bulut'un geri bildirimleri ve kişisel plan.
+// Yapay zeka katmanı (Claude Haiku 5.5, Hafta 10'da seçilen model) + yedek sistem.
 //
-// Tüm cevaplar kurallara ve hazır içeriklere dayanır (data/ klasörü ve bu dosyadaki listeler).
-// İnternet bağlantısı gerektirmez, ücretsizdir ve her zaman aynı şekilde çalışır.
+// Uygulama yapay zekaya DOĞRUDAN istek atmaz; kendi sunucu fonksiyonumuza (api/yapay-zeka.js) gider.
+// API anahtarı yalnızca sunucuda (Vercel ortam değişkeni ANTHROPIC_API_KEY) durur.
 //
-// GÜVENLİK: Kriz ifadesi yazılırsa { kriz: true } döner ve uygulama destek ekranını (112) gösterir.
+// YEDEK SİSTEM: Yapay zeka cevap veremezse (anahtar eklenmemiş, kredi bitmiş, internet yok,
+// `npm run dev` ile yerelde çalışıyorsun vb.) her fonksiyon kurallara dayalı hazır cevaplara döner.
+// Uygulama hiçbir zaman bozulmaz; cevabın kaynağı "kaynak" alanında belirtilir.
+//
+// GÜVENLİK: Kriz ifadesi yazılırsa yapay zeka hiç çağrılmaz; { kriz: true } döner ve
+// uygulama destek ekranını (112) gösterir.
 
 import { krizVarMi } from '../data/safety.js';
+import { BOLUMLER } from '../data/levels.js';
+
+async function sunucuyaSor(govde) {
+  const kontrol = new AbortController();
+  const zamanAsimi = setTimeout(() => kontrol.abort(), 20000);
+  try {
+    const cevap = await fetch('./api/yapay-zeka', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(govde),
+      signal: kontrol.signal
+    });
+    return await cevap.json().catch(() => null);
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(zamanAsimi);
+  }
+}
 
 // ---------- Oyundaki hazır kartlar için geri bildirim ----------
 export async function dusunceGeriBildirimi(kart, tuzakDedi) {
@@ -43,10 +67,13 @@ function ipucuBul(metin) {
 
 export async function kendiDusunceniAnaliz(metin) {
   if (krizVarMi(metin)) return { kriz: true };
-  return ipucuBul(metin);
+  const veri = await sunucuyaSor({ tur: 'dusunce', metin });
+  if (veri?.kriz) return { kriz: true };
+  if (veri?.sonuc && typeof veri.sonuc.aciklama === 'string') return { ...veri.sonuc, kaynak: 'yapay-zeka' };
+  return { ...ipucuBul(metin), kaynak: 'yedek' };
 }
 
-// ---------- Kişisel başlangıç planı (seçilen odağa göre sıralanır) ----------
+// ---------- Kişisel başlangıç planı (yedek: seçilen odağa göre sıralanır) ----------
 const ODAK_SIRALARI = {
   'Sınav ve ders stresi': ['dusunce', 'nefes', 'bilgi'],
   'Kaygı ve endişe': ['nefes', 'dusunce', 'bilgi'],
@@ -73,7 +100,16 @@ function planOlustur(odak, sure) {
   };
 }
 
+const gecerliOyun = (o) => BOLUMLER.some((b) => b.id === o && b.yol);
+
 export async function kisiselPlan({ odak, sure, not }) {
   if (krizVarMi(`${odak} ${not}`)) return { kriz: true };
-  return planOlustur(odak, sure);
+  const veri = await sunucuyaSor({ tur: 'plan', odak, sure, not });
+  if (veri?.kriz) return { kriz: true };
+  const s = veri?.sonuc;
+  if (s && typeof s.mesaj === 'string' && Array.isArray(s.adimlar)) {
+    const adimlar = s.adimlar.filter((a) => gecerliOyun(a?.oyun) && typeof a.metin === 'string').slice(0, 3);
+    if (adimlar.length) return { mesaj: s.mesaj, adimlar, kaynak: 'yapay-zeka' };
+  }
+  return { ...planOlustur(odak, sure), kaynak: 'yedek' };
 }

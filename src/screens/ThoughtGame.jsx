@@ -6,7 +6,7 @@ import { Kalkan, Tuzak } from '../components/Icons.jsx';
 import { OyunUstu } from '../components/Ui.jsx';
 import { DUSUNCE_KARTLARI } from '../data/thoughts.js';
 import { git } from '../router.js';
-import { dusunceGeriBildirimi } from '../services/rehber.js';
+import { dusunceGeriBildirimi } from '../services/ai.js';
 import { useOyun } from '../state/GameContext.jsx';
 import { karistir } from '../state/rules.js';
 

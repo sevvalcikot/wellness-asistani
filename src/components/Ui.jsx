@@ -85,8 +85,19 @@ export function BilgiPenceresi({ kapat }) {
   );
 }
 
+// Cevabın nereden geldiğini gösteren küçük etiket (şeffaflık için)
+export function KaynakEtiketi({ kaynak }) {
+  if (!kaynak) return null;
+  const yz = kaynak === 'yapay-zeka';
+  return (
+    <span className={'kaynak-etiketi' + (yz ? ' yz' : '')}>
+      {yz ? 'Yapay zeka cevabı' : 'Hazır cevap (yapay zeka şu an kapalı)'}
+    </span>
+  );
+}
+
 // Kriz ifadesi algılandığında gösterilen destek penceresi.
-// Kullanıcı gerçek insanlara (112, güvendiği kişiler, uzmanlar) yönlendirilir.
+// Burada yapay zeka devreye girmez; kullanıcı gerçek insanlara yönlendirilir.
 export function KrizPenceresi({ kapat }) {
   return (
     <div className="perde" onClick={kapat}>
