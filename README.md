@@ -163,7 +163,7 @@ Sunumdaki sistem mimarisiyle aynı sırada:
 
 1. **Yapay zekayı aç:** API kredisi yükleyip anahtarı Vercel'e ekle (bkz. bölüm 6). Kod hazır.
 2. **Affiliate**
-   - Bir mağazanın ortaklık programına katıl.
-   - Takip kodlu bağlantıları `data/recommendations.js` içine yaz.
+   - Öneriler şu an Hepsiburada'daki normal kitap sayfalarına gidiyor (komisyon yok).
+   - Hepsiburada "Link Gelir" programına katıl, her kitabın sana özel bağlantısını `data/recommendations.js` içine yaz ve `ORTAKLIK_AKTIF` değerini `true` yap.
 
 > Bu uygulama terapi ya da tıbbi tedavi yerine geçmez. Uygulama içindeki "?" düğmesinde bu bilgi ve acil durum (112) notu yer alır.

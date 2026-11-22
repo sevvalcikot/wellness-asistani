@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Kitap, RozetSimgesi, Yildiz } from '../components/Icons.jsx';
 import { arkadasBul } from '../data/companions.js';
-import { ONERILER } from '../data/recommendations.js';
+import { ONERILER, ORTAKLIK_AKTIF } from '../data/recommendations.js';
 import { ROZETLER } from '../data/rewards.js';
 import { git } from '../router.js';
 import { useOyun } from '../state/GameContext.jsx';
@@ -36,7 +36,7 @@ export default function WinScreen() {
   const yeniRozet = rozet && o.yeniRozetler.includes(rozet.id);
 
   const oneriTikla = () => {
-    tiklamaKaydet(oneri.id); // ileride veritabanındaki affiliate_tiklamalar tablosuna yazılacak
+    tiklamaKaydet(oneri.id); // hesapla girildiyse affiliate_tiklamalar tablosuna da yazılır
     if (oneri.url) window.open(oneri.url, '_blank', 'noopener,noreferrer');
     else setBildirim('Tıklama kaydedildi. Ortaklık bağlantısı henüz eklenmedi (data/recommendations.js).');
   };
@@ -94,7 +94,7 @@ export default function WinScreen() {
           <span className="oneri-simge"><Kitap /></span>
           <span className="oneri-metin">
             <b>{oneri.baslik}</b>
-            <small>{oneri.magaza} · İş ortaklığı bağlantısı</small>
+            <small>{oneri.magaza} · {ORTAKLIK_AKTIF ? 'İş ortaklığı bağlantısı' : 'Mağaza bağlantısı'}</small>
           </span>
         </button>
       )}
