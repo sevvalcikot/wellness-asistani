@@ -1,7 +1,7 @@
 // Oyunlar sekmesi: açılmış oyunları tekrar oynamak için
 import { Kilit, RozetSimgesi } from '../components/Icons.jsx';
 import { AltMenu } from '../components/Ui.jsx';
-import { BOLUMLER } from '../data/levels.js';
+import { BOLUMLER, bolumBul } from '../data/levels.js';
 import { git } from '../router.js';
 import { useOyun } from '../state/GameContext.jsx';
 import { bolumDurumu } from './MapScreen.jsx';
@@ -25,6 +25,26 @@ export default function GamesScreen() {
         </div>
       </div>
       <div className="icerik-dolgu" style={{ gap: 12 }}>
+        {durum.plan ? (
+          <div className="beyaz-panel" style={{ marginTop: 0 }}>
+            <div className="satir-ara"><span className="ust-etiket" style={{ color: '#2E8A45' }}>KİŞİSEL PLANIM</span></div>
+            {durum.plan.adimlar.map((a, i) => (
+              <div key={i} className="govde"><b>{i + 1}. {bolumBul(a.oyun)?.oyun}:</b> {a.metin}</div>
+            ))}
+          </div>
+        ) : (
+          <button className="oyun-karti" style={{ background: '#FFF6D6' }} onClick={() => git('/plan')}>
+            <span className="oyun-yazi"><b>Kişisel planını oluştur</b><small>3 kısa soruya cevap ver, sana uygun bir başlangıç planı hazırlansın.</small></span>
+            <span className="oyun-git">Başla</span>
+          </button>
+        )}
+
+        <button className="oyun-karti" style={{ background: '#D7F5C8' }} onClick={() => git('/defter')}>
+          <span className="oyun-simge"><RozetSimgesi simge="tuzak" /></span>
+          <span className="oyun-yazi"><b>Düşünce Defteri</b><small>Kendi düşünceni yaz, Bulut hangi tuzağa benzediğini söylesin.</small></span>
+          <span className="oyun-git">Yaz</span>
+        </button>
+
         {oyunlar.map(({ b, d }) => {
           const acik = d === 'simdi' || d === 'tamam';
           const a = ACIKLAMALAR[b.id];

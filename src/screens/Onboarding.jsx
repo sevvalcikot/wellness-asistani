@@ -12,7 +12,7 @@ export default function Onboarding() {
 
   const basla = () => {
     arkadasSec(secili);
-    git('/harita');
+    git(durum.plan ? '/harita' : '/plan'); // ilk kez geliyorsa 2. adım: kişisel plan
   };
 
   return (

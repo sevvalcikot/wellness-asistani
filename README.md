@@ -1,6 +1,6 @@
-# AI Wellness Asistanı
+# Wellness Asistanı
 
-Oyun oynayarak düşünce tuzaklarını ve nefes egzersizlerini öğreten, yapay zeka destekli iyi oluş uygulaması.
+Oyun oynayarak düşünce tuzaklarını ve nefes egzersizlerini öğreten, affiliate gelir modelli iyi oluş uygulaması.
 Sistem Analizi ve Tasarımı-I dersi, **Proje 02** kapsamında geliştiriliyor.
 
 - **Ön yüz:** React
@@ -41,6 +41,7 @@ Durdurmak için Terminal'de `Ctrl + C`.
 ```
 src/
 ├── data/                 ← İÇERİKLER: kod bilmeden genişletebileceğin yer
+│   ├── safety.js         Kriz ifadeleri listesi (güvenlik)
 │   ├── thoughts.js       Düşünce Avcısı kartları
 │   ├── quiz.js           Bilgi Kulesi soruları
 │   ├── levels.js         Haritadaki bölümler
@@ -60,7 +61,7 @@ src/
 ├── state/                Oyunun durumu: XP, jeton, seviye, görevler (GameContext.jsx, rules.js)
 ├── services/             Dış dünyayla konuşan katman
 │   ├── storage.js        Veri saklama (şimdi: tarayıcı, sonra: Supabase)
-│   └── ai.js             Yapay zeka (şimdi: hazır metinler, sonra: Claude Haiku 5.5)
+│   └── rehber.js         Bulut'un geri bildirimleri ve kişisel plan (kurallara dayalı)
 ├── router.js             Hangi adreste hangi ekran (#harita, #oda, #oyun-nefes ...)
 ├── App.jsx               Ekranların listesi
 ├── main.jsx              Başlangıç noktası
@@ -103,7 +104,13 @@ En kolay yol **Vercel**:
 
 Telefonda bu adresi açıp **Paylaş → Ana Ekrana Ekle** (iPhone) ya da **⋮ → Uygulamayı yükle** (Android) dersen uygulama simgesiyle telefona yüklenir.
 
-## 6. Sonraki adımlar (yol haritası)
+## 6. Güvenlik
+
+- `src/data/safety.js` dosyasında kriz ifadeleri listesi var.
+- Plan ya da Düşünce Defteri'ne bu ifadelerden biri yazılırsa uygulama destek penceresini gösterir: 112 ve güvendiği kişilerle konuşma önerisi.
+- Uygulama terapi yerine geçmez. Bu bilgi "?" düğmesindeki pencerede de yazar.
+
+## 7. Sonraki adımlar (yol haritası)
 
 Sunumdaki sistem mimarisiyle aynı sırada:
 
@@ -111,13 +118,7 @@ Sunumdaki sistem mimarisiyle aynı sırada:
    - Kullanıcı girişi (kayıt / giriş).
    - `services/storage.js` içindeki iki fonksiyonu veritabanına yazacak şekilde değiştir.
    - Tablolar: `kullanicilar`, `ilerleme`, `dusunce_kartlari`, `rozetler`, `affiliate_tiklamalar`.
-2. **Yapay zekayı bağla**
-   - Supabase'de bir Edge Function yaz. Bu fonksiyon Claude Haiku 5.5 API'sini çağırsın.
-   - `services/ai.js` bu fonksiyona istek atsın.
-   - **API anahtarını asla uygulamanın koduna yazma**, sadece sunucuda tut.
-3. **Güvenlik katmanı**
-   - Kriz ifadeleri algılanınca yapay zeka sohbeti durdursun.
-   - Kullanıcıya profesyonel destek ve 112 bilgisi gösterilsin.
+3. **Duygu günlüğü ve haftalık duygu grafiği** (gereksinim analizindeki zorunlu madde).
 4. **Affiliate**
    - Bir mağazanın ortaklık programına katıl.
    - Takip kodlu bağlantıları `data/recommendations.js` içine yaz.

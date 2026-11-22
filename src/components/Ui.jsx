@@ -84,3 +84,20 @@ export function BilgiPenceresi({ kapat }) {
     </div>
   );
 }
+
+// Kriz ifadesi algılandığında gösterilen destek penceresi.
+// Kullanıcı gerçek insanlara (112, güvendiği kişiler, uzmanlar) yönlendirilir.
+export function KrizPenceresi({ kapat }) {
+  return (
+    <div className="perde" onClick={kapat}>
+      <div className="pencere kriz" role="alertdialog" aria-modal="true" aria-labelledby="kriz-baslik" onClick={(e) => e.stopPropagation()}>
+        <h2 id="kriz-baslik">Yalnız değilsin</h2>
+        <p>Yazdıkların çok zor bir an yaşıyor olabileceğini gösteriyor. Bu konuda bir uygulamadan çok daha fazlasını hak ediyorsun: gerçek bir insanla konuşmak.</p>
+        <p><b>Kendini güvende hissetmiyorsan hemen 112'yi ara.</b></p>
+        <p>Güvendiğin bir arkadaşına, aile üyene ya da bir ruh sağlığı uzmanına şu an nasıl hissettiğini anlatmak da iyi bir ilk adım olabilir.</p>
+        <a className="kriz-numara" href="tel:112" aria-label="112 Acil Çağrı Merkezini ara">112</a>
+        <button className="dugme birincil" style={{ width: '100%', marginTop: 12 }} onClick={kapat}>Anladım</button>
+      </div>
+    </div>
+  );
+}

@@ -22,6 +22,7 @@ const ilkDurum = () => ({
   esyalar: ['abajur'],
   gorevler: bosGorevler(),
   sonOdul: null, // son biten bölümün ödül özeti (ödül ekranı için)
+  plan: null, // başlangıçta hazırlanan kişisel plan { mesaj, adimlar, kaynak }
   tiklamalar: [] // affiliate tıklama kayıtları (ileride veritabanına gidecek)
 });
 
@@ -76,6 +77,19 @@ function reducer(durum, eylem) {
       };
     }
 
+    case 'XP_EKLE': {
+      // Bölüm bitirmeden küçük ödüller (ör. Düşünce Defteri): { xp, gorev }
+      const ilerleme = { ...d.gorevler.ilerleme };
+      Object.entries(eylem.gorev || {}).forEach(([id, miktar]) => {
+        const hedef = GUNLUK_GOREVLER.find((g) => g.id === id)?.hedef ?? 0;
+        ilerleme[id] = Math.min(hedef, (ilerleme[id] || 0) + miktar);
+      });
+      return { ...d, xp: d.xp + eylem.xp, seri: seriyiGuncelle(d.seri), gorevler: { ...d.gorevler, ilerleme } };
+    }
+
+    case 'PLAN_KAYDET':
+      return { ...d, plan: eylem.plan };
+
     case 'ESYA_AL': {
       const { esya } = eylem;
       if (d.esyalar.includes(esya.id) || d.jeton < esya.fiyat) return d;
@@ -106,6 +120,8 @@ export function OyunSaglayici({ children }) {
     arkadasSec: (id) => gonder({ tur: 'ARKADAS_SEC', id }),
     bolumBitir: (odul) => gonder({ tur: 'BOLUM_BITIR', odul }),
     esyaAl: (esya) => gonder({ tur: 'ESYA_AL', esya }),
+    xpEkle: (xp, gorev) => gonder({ tur: 'XP_EKLE', xp, gorev }),
+    planKaydet: (plan) => gonder({ tur: 'PLAN_KAYDET', plan }),
     tiklamaKaydet: (oneriId) => gonder({ tur: 'TIKLAMA_KAYDET', oneriId }),
     sifirla: () => {
       durumuSil();

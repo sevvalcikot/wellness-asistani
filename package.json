@@ -2,7 +2,7 @@
   "name": "wellness-asistani",
   "private": true,
   "version": "0.1.0",
-  "description": "AI Wellness Asistanı: oyunlaştırılmış, yapay zeka destekli iyi oluş uygulaması (React + PWA)",
+  "description": "Wellness Asistanı: oyunlaştırılmış, affiliate destekli iyi oluş uygulaması (React + PWA)",
   "type": "module",
   "scripts": {
     "dev": "vite --host",

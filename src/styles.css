@@ -431,3 +431,33 @@ svg .pat { transform-box: fill-box; transform-origin: center; }
   .telefon { min-height: calc(100dvh - 48px); border-radius: 36px; border: 3px solid var(--murekkep); }
   .ekran { min-height: calc(100dvh - 54px); }
 }
+
+/* ---------- Plan, Düşünce Defteri ve kriz penceresi ---------- */
+.soru-grubu { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.soru-grubu legend, .legend { padding: 0; font-family: var(--baslik-font); font-size: 18px; font-weight: 800; line-height: 1.2; margin-bottom: 2px; }
+.cip-listesi { display: flex; flex-wrap: wrap; gap: 8px; }
+.cip {
+  border: 2px solid var(--murekkep); border-radius: 999px; background: #FFFFFF; padding: 8px 14px;
+  font-size: 14px; font-weight: 800; transition: transform .15s ease;
+}
+.cip.secili { background: var(--murekkep); color: #FFFFFF; transform: translateY(-1px); }
+.metin-alani {
+  width: 100%; border: 3px solid var(--murekkep); border-radius: 18px; padding: 12px 14px; background: #FFFFFF;
+  font: inherit; font-size: 15px; font-weight: 700; line-height: 1.45; resize: vertical; color: var(--murekkep);
+}
+.metin-alani:focus { outline: 3px solid #2F6FCB; outline-offset: 2px; }
+.metin-dugme { background: none; border: 0; font-weight: 800; color: var(--soluk); text-decoration: underline; padding: 4px; align-self: center; }
+.plan-adimi {
+  display: flex; gap: 12px; align-items: flex-start; background: #FFFFFF; border: 3px solid var(--murekkep);
+  border-radius: 18px; padding: 12px 14px; font-size: 14px; font-weight: 700; line-height: 1.45;
+}
+.plan-no {
+  width: 30px; height: 30px; flex-shrink: 0; border-radius: 10px; background: #FFE45E; border: 2px solid var(--murekkep);
+  display: flex; align-items: center; justify-content: center; font-family: var(--baslik-font); font-weight: 800;
+}
+.pencere.kriz h2 { color: #B42318; }
+.kriz-numara {
+  display: block; color: var(--murekkep); text-decoration: none;
+  margin-top: 6px; text-align: center; font-family: var(--baslik-font); font-size: 44px; font-weight: 800;
+  background: #FFE1D6; border: 3px solid var(--murekkep); border-radius: 18px; padding: 4px 0;
+}
