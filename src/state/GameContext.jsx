@@ -2,7 +2,7 @@
 // Ekranlar bu bilgilere useOyun() ile ulaşır.
 import { createContext, useContext, useEffect, useReducer, useState } from 'react';
 import { durumuKaydet, durumuSil, durumuYukle } from '../services/storage.js';
-import { bekleyenOnayiTamamla, cikisYap, girisYap, hesabimiSil, kayitliOturum, kayitOl, sunucudanGetir, sunucuyaKaydet } from '../services/supabase.js';
+import { bekleyenOnayiTamamla, cikisYap, girisYap, hesabimiSil, sifreDegistir, sifreSifirlamaIste, kayitliOturum, kayitOl, sunucudanGetir, sunucuyaKaydet } from '../services/supabase.js';
 import { BASLANGIC_JETONU, GOREV_BONUS_XP, GUNLUK_GOREVLER } from '../data/rewards.js';
 import { GUNLUK_XP, dunAnahtari, gunAnahtari, seviye } from './rules.js';
 
@@ -169,17 +169,24 @@ export function OyunSaglayici({ children }) {
     return sunucu ? 'hesaptan-yuklendi' : 'cihazdan-aktarildi';
   };
 
-  // E-posta onay bağlantısından gelindiyse otomatik giriş yap
+  // E-postadaki bağlantıdan (onay ya da şifre sıfırlama) gelindiyse otomatik giriş yap
   const [onayMesaji, setOnayMesaji] = useState(null);
+  const [sifreYenile, setSifreYenile] = useState(false); // şifre sıfırlama bağlantısından gelindi
   useEffect(() => {
     bekleyenOnayiTamamla().then(async (r) => {
       if (!r) return;
       if (r.hata) return setOnayMesaji({ tur: 'hata', metin: 'Onay bağlantısının süresi dolmuş olabilir. E-postanla giriş yapmayı dene.' });
+      const sifirlama = r.tur === 'recovery';
       try {
         await hesabaBaglan(r.oturum);
-        setOnayMesaji({ tur: 'bilgi', metin: 'E-postan onaylandı, giriş yapıldı. Hoş geldin!' });
       } catch {
         setHesap(r.oturum.kullanici);
+      }
+      if (sifirlama) {
+        setSifreYenile(true);
+        setOnayMesaji({ tur: 'bilgi', metin: 'Şimdi yeni şifreni belirle.' });
+      } else {
+        setOnayMesaji({ tur: 'bilgi', metin: 'E-postan onaylandı, giriş yapıldı. Hoş geldin!' });
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -210,8 +217,15 @@ export function OyunSaglayici({ children }) {
       }
       await cikisYap();
       setHesap(null);
+      setSifreYenile(false);
       durumuSil();
       gonder({ tur: 'SIFIRLA' }); // ortak cihazda başkası verileri görmesin; veriler hesapta güvende
+    },
+    sifreUnuttum: (email) => sifreSifirlamaIste(email),
+    sifreDegistir: async (yeni) => {
+      const r = await sifreDegistir(yeni);
+      if (!r.hata) setSifreYenile(false);
+      return r;
     },
     // KVKK: hesabı ve tüm verileri kalıcı olarak sil (hem sunucudan hem bu cihazdan)
     sil: async () => {
@@ -238,7 +252,7 @@ export function OyunSaglayici({ children }) {
     }
   };
 
-  return <OyunContext.Provider value={{ durum, ...eylemler, hesap, senkron, hesapIslemleri, onayMesaji }}>{children}</OyunContext.Provider>;
+  return <OyunContext.Provider value={{ durum, ...eylemler, hesap, senkron, hesapIslemleri, onayMesaji, sifreYenile }}>{children}</OyunContext.Provider>;
 }
 
 export function useOyun() {

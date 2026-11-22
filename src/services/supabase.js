@@ -45,15 +45,17 @@ function hataMetni(veri, durum) {
   if (m.includes('already registered') || m.includes('user_already_exists')) return 'Bu e-postayla zaten bir hesap var. Giriş yapmayı dene.';
   if (m.includes('email not confirmed') || m.includes('email_not_confirmed')) return 'E-postanı henüz onaylamadın. Gelen kutundaki bağlantıya tıkla.';
   if (m.includes('password') && (m.includes('6') || m.includes('weak'))) return 'Şifre en az 6 karakter olmalı.';
+  if (m.includes('same_password') || m.includes('different from the old')) return 'Yeni şifre eskisinden farklı olmalı.';
+  if (m.includes('reauthentication') || m.includes('session_not_found') || m.includes('jwt')) return 'Bağlantının süresi dolmuş. Şifre sıfırlamayı yeniden iste.';
   if (m.includes('rate limit') || durum === 429) return 'Çok fazla deneme yapıldı. Biraz bekleyip tekrar dene.';
   if (m.includes('invalid') && m.includes('email')) return 'Geçerli bir e-posta adresi yaz.';
   return 'Bir sorun oluştu. İnternet bağlantını kontrol edip tekrar dene.';
 }
 
-async function authIstegi(yol, govde, token) {
+async function authIstegi(yol, govde, token, method = 'POST') {
   try {
     const cevap = await fetch(`${SUPABASE_URL}/auth/v1/${yol}`, {
-      method: 'POST',
+      method,
       headers: {
         apikey: SUPABASE_ANAHTAR,
         'Content-Type': 'application/json',
@@ -96,6 +98,23 @@ export async function cikisYap() {
   oturumYaz(null);
 }
 
+// Şifremi unuttum: e-postaya sıfırlama bağlantısı gönderir.
+// Güvenlik gereği Supabase, o e-postayla hesap olmasa da "tamam" der (kimin üye olduğu anlaşılmasın).
+export async function sifreSifirlamaIste(email) {
+  const r = await authIstegi(`recover?redirect_to=${encodeURIComponent(geriDonusAdresi())}`, { email });
+  if (!r.ok) return { hata: hataMetni(r.veri, r.durum) };
+  return { tamam: true };
+}
+
+// Giriş yapmış kullanıcının şifresini değiştirir (sıfırlama bağlantısından gelince de bu kullanılır)
+export async function sifreDegistir(yeniSifre) {
+  const o = await gecerliOturum();
+  if (!o) return { hata: 'Oturumun kapanmış. Tekrar giriş yap.' };
+  const r = await authIstegi('user', { password: yeniSifre }, o.access_token, 'PUT');
+  if (!r.ok) return { hata: hataMetni(r.veri, r.durum) };
+  return { tamam: true };
+}
+
 // KVKK: hesabı ve hesaptaki tüm verileri kalıcı olarak siler (veritabanındaki hesabimi_sil fonksiyonu).
 // Başarılı olursa cihazdaki oturum da silinir. Hata olursa { hata } döner.
 export async function hesabimiSil() {
@@ -126,7 +145,8 @@ export async function gecerliOturum() {
 export const kayitliOturum = () => oturumOku();
 
 // ---------- E-posta onayından dönüş ----------
-// Onay bağlantısı kullanıcıyı ".../#access_token=...&refresh_token=..." adresine getirir.
+// E-postadaki bağlantı (hesap onayı ya da şifre sıfırlama) kullanıcıyı
+// ".../#access_token=...&refresh_token=...&type=..." adresine getirir.
 // Uygulama açılmadan ÖNCE bu bilgiyi adresten alıp saklarız ve adresi #hesap yaparız
 // (giriş bilgisi adres çubuğunda kalmasın, yönlendirici de şaşırmasın).
 let bekleyenOnay = null;
@@ -136,7 +156,7 @@ export function adrestekiOnayiAl() {
   if (!h.includes('access_token=') && !h.includes('error=')) return;
   const p = new URLSearchParams(h.replace(/^#\/?/, ''));
   bekleyenOnay = p.get('access_token')
-    ? { access_token: p.get('access_token'), refresh_token: p.get('refresh_token'), expires_in: Number(p.get('expires_in')) || 3600 }
+    ? { access_token: p.get('access_token'), refresh_token: p.get('refresh_token'), expires_in: Number(p.get('expires_in')) || 3600, tur: p.get('type') }
     : { hata: true };
   history.replaceState(null, '', `${window.location.pathname}${window.location.search}#hesap`);
 }
@@ -154,7 +174,7 @@ export async function bekleyenOnayiTamamla() {
     const user = await cevap.json();
     const oturum = oturumuDuzenle({ ...b, user });
     oturumYaz(oturum);
-    return { oturum };
+    return { oturum, tur: b.tur }; // tur: 'signup' (e-posta onayı) | 'recovery' (şifre sıfırlama)
   } catch {
     return { hata: true };
   }

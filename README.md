@@ -152,6 +152,8 @@ Nasıl çalışıyor:
 - Hesap açmak isteğe bağlı. Hesapsız oynayan birinin ilerlemesi sadece kendi cihazında durur.
 - Giriş yapılınca her değişiklik 1,5 saniye içinde hesaba kaydedilir (`src/services/supabase.js`).
 - Kayıt olurken kullanıcıdan açık rıza alınır (KVKK: duygu günlüğü sağlıkla ilgili veri sayılabilir).
+- **Şifremi unuttum / şifre değiştir:** Giriş sekmesinde "Şifremi unuttum" sıfırlama bağlantısı gönderir; bağlantıdan gelen kullanıcıya "Yeni şifre" formu açılır. Giriş yapmışken "Şifremi değiştir" de aynı formu kullanır.
+  - Herkese mail gidebilmesi için Supabase → Authentication → Emails → SMTP Settings'te projenin Gmail hesabı bağlanır (`smtp.gmail.com`, port `465`, Gmail **uygulama şifresi**). Uygulama şifresi yalnızca Supabase'e girilir, koda asla yazılmaz.
 - **Aydınlatma metni:** `#gizlilik` adresinde (`src/screens/PrivacyScreen.jsx`). Hangi veri, neden, nerede, ne kadar süre, KVKK hakları.
 - **Hesabı silme:** Hesabım → "Hesabımı ve verilerimi sil". Veritabanındaki `hesabimi_sil()` fonksiyonu yalnızca giriş yapan kişinin kendi hesabını siler; bağlı tüm tablolar (`ON DELETE CASCADE`) birlikte silinir.
   - Supabase güvenlik denetimi bu fonksiyon için bir uyarı gösterir ("giriş yapmış kullanıcı çalıştırabilir"). Bu bilerek yapıldı: fonksiyon yalnızca `auth.uid()` ile kişinin kendi hesabına dokunur.

@@ -1,4 +1,4 @@
-// Hesabım: kayıt ol / giriş yap / çıkış yap
+// Hesabım: kayıt ol / giriş yap / şifremi unuttum / şifre değiştir / çıkış yap / hesabı sil
 // Hesap açmak isteğe bağlıdır. Hesapla giriş yapınca ilerleme ve günlük başka cihazlarda da görünür.
 import { useEffect, useState } from 'react';
 import Companion from '../components/Companion.jsx';
@@ -13,8 +13,8 @@ const SENKRON_METNI = {
 };
 
 export default function AccountScreen() {
-  const { durum, hesap, senkron, hesapIslemleri, onayMesaji } = useOyun();
-  const [mod, setMod] = useState('kayit');
+  const { durum, hesap, senkron, hesapIslemleri, onayMesaji, sifreYenile } = useOyun();
+  const [mod, setMod] = useState('kayit'); // 'kayit' | 'giris' | 'unuttum'
   const [email, setEmail] = useState('');
   const [sifre, setSifre] = useState('');
   const [riza, setRiza] = useState(false);
@@ -36,6 +36,34 @@ export default function AccountScreen() {
   useEffect(() => {
     if (onayMesaji) setMesaj(onayMesaji);
   }, [onayMesaji]);
+
+  // Şifre değiştirme (giriş yapmışken ya da sıfırlama bağlantısından gelince)
+  const [sifreFormu, setSifreFormu] = useState(false);
+  const [yeniSifre, setYeniSifre] = useState('');
+  const [sifreMesaji, setSifreMesaji] = useState(null);
+  const sifreFormuAcik = sifreFormu || sifreYenile;
+
+  const sifreyiKaydet = async (e) => {
+    e.preventDefault();
+    setSifreMesaji(null);
+    setBekliyor(true);
+    const r = await hesapIslemleri.sifreDegistir(yeniSifre);
+    setBekliyor(false);
+    if (r.hata) return setSifreMesaji({ tur: 'hata', metin: r.hata });
+    setYeniSifre('');
+    setSifreFormu(false);
+    setMesaj({ tur: 'bilgi', metin: 'Şifren değiştirildi. Bundan sonra yeni şifrenle giriş yap.' });
+  };
+
+  const sifirlamaGonder = async (e) => {
+    e.preventDefault();
+    setMesaj(null);
+    setBekliyor(true);
+    const r = await hesapIslemleri.sifreUnuttum(email.trim());
+    setBekliyor(false);
+    if (r.hata) return setMesaj({ tur: 'hata', metin: r.hata });
+    setMesaj({ tur: 'bilgi', metin: 'Bu e-postayla bir hesap varsa şifre sıfırlama bağlantısı gönderdik. Gelen kutunu ve gereksiz (spam) klasörünü kontrol et.' });
+  };
 
   const gonder = async (e) => {
     e.preventDefault();
@@ -73,6 +101,17 @@ export default function AccountScreen() {
             <div className="govde" style={{ fontSize: 16, wordBreak: 'break-all' }}><b>{hesap.email}</b></div>
             {mesaj?.tur === 'bilgi' && <div className="kucuk-bildirim" role="status">{mesaj.metin}</div>}
             <div className="govde soluk" role="status">{SENKRON_METNI[senkron]}</div>
+            {sifreFormuAcik ? (
+              <form className="sifre-formu" onSubmit={sifreyiKaydet}>
+                <label htmlFor="yeni-sifre" className="legend" style={{ fontSize: 15 }}>Yeni şifre <span className="soluk" style={{ fontSize: 13 }}>(en az 6 karakter)</span></label>
+                <input id="yeni-sifre" type="password" required minLength={6} autoComplete="new-password" className="metin-alani" value={yeniSifre} onChange={(e) => setYeniSifre(e.target.value)} />
+                {sifreMesaji && <div className="kucuk-bildirim hata" role="alert">{sifreMesaji.metin}</div>}
+                <button type="submit" className="dugme birincil" disabled={bekliyor}>{bekliyor ? 'Bekle…' : 'Şifreyi kaydet'}</button>
+                {!sifreYenile && <button type="button" className="dugme beyaz" onClick={() => { setSifreFormu(false); setSifreMesaji(null); }}>Vazgeç</button>}
+              </form>
+            ) : (
+              <button className="metin-dugme sol-hizali" onClick={() => { setMesaj(null); setSifreFormu(true); }}>Şifremi değiştir</button>
+            )}
             <button className="dugme beyaz" onClick={hesapIslemleri.cikis}>Çıkış yap</button>
             <p className="alt-yazi" style={{ margin: 0 }}>Çıkış yapınca veriler bu cihazdan silinir ama hesabında güvende kalır.</p>
             {mesaj?.tur === 'hata' && <div className="kucuk-bildirim hata" role="alert">{mesaj.metin}</div>}
@@ -90,8 +129,18 @@ export default function AccountScreen() {
           <section className="beyaz-panel" style={{ marginTop: 0, gap: 12 }}>
             <div className="sekmeler" role="tablist">
               <button role="tab" aria-selected={mod === 'kayit'} className={mod === 'kayit' ? 'secili' : ''} onClick={() => { setMod('kayit'); setMesaj(null); }}>Hesap aç</button>
-              <button role="tab" aria-selected={mod === 'giris'} className={mod === 'giris' ? 'secili' : ''} onClick={() => { setMod('giris'); setMesaj(null); }}>Giriş yap</button>
+              <button role="tab" aria-selected={mod !== 'kayit'} className={mod !== 'kayit' ? 'secili' : ''} onClick={() => { setMod('giris'); setMesaj(null); }}>Giriş yap</button>
             </div>
+            {mod === 'unuttum' ? (
+              <form onSubmit={sifirlamaGonder} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div className="govde">Hesabının e-postasını yaz. Sana yeni şifre belirleyebileceğin bir bağlantı gönderelim.</div>
+                <label htmlFor="unuttum-email" className="legend" style={{ fontSize: 15 }}>E-posta</label>
+                <input id="unuttum-email" type="email" required autoComplete="email" className="metin-alani" value={email} onChange={(e) => setEmail(e.target.value)} />
+                {mesaj && <div className={'kucuk-bildirim' + (mesaj.tur === 'hata' ? ' hata' : '')} role={mesaj.tur === 'hata' ? 'alert' : 'status'}>{mesaj.metin}</div>}
+                <button type="submit" className="dugme birincil" disabled={bekliyor}>{bekliyor ? 'Bekle…' : 'Sıfırlama bağlantısı gönder'}</button>
+                <button type="button" className="metin-dugme" onClick={() => { setMod('giris'); setMesaj(null); }}>Girişe dön</button>
+              </form>
+            ) : (
             <form onSubmit={gonder} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <label htmlFor="hesap-email" className="legend" style={{ fontSize: 15 }}>E-posta</label>
               <input id="hesap-email" type="email" required autoComplete="email" className="metin-alani" value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -106,7 +155,9 @@ export default function AccountScreen() {
               {mod === 'kayit' && <a className="metin-baglanti" href="#gizlilik">Aydınlatma metnini oku</a>}
               {mesaj && <div className={'kucuk-bildirim' + (mesaj.tur === 'hata' ? ' hata' : '')} role={mesaj.tur === 'hata' ? 'alert' : 'status'}>{mesaj.metin}</div>}
               <button type="submit" className="dugme birincil" disabled={bekliyor}>{bekliyor ? 'Bekle…' : mod === 'kayit' ? 'Hesap aç' : 'Giriş yap'}</button>
+              {mod === 'giris' && <button type="button" className="metin-dugme" onClick={() => { setMod('unuttum'); setMesaj(null); }}>Şifremi unuttum</button>}
             </form>
+            )}
           </section>
         )}
 
