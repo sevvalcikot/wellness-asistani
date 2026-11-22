@@ -77,13 +77,14 @@ export async function kendiDusunceniAnaliz(metin) {
 const ODAK_SIRALARI = {
   'Sınav ve ders stresi': ['dusunce', 'nefes', 'bilgi'],
   'Kaygı ve endişe': ['nefes', 'dusunce', 'bilgi'],
-  'Uyku ve yorgunluk': ['nefes', 'bilgi', 'dusunce'],
-  'İlişkiler ve yalnızlık': ['dusunce', 'bilgi', 'nefes']
+  'Uyku ve yorgunluk': ['nefes', 'huzur', 'bilgi'],
+  'İlişkiler ve yalnızlık': ['dusunce', 'huzur', 'nefes']
 };
 const OYUN_METINLERI = {
   nefes: 'Gün içinde gerildiğinde 1 nefes molası ver; bedenin yavaşladıkça zihnin de sakinleşir.',
   dusunce: 'Her gün bir tur Düşünce Avcısı oyna; kendini zorlayan düşünceleri fark etmeyi öğren.',
-  bilgi: 'Haftada birkaç kez Bilgi Kulesi’ne çık; zihnin nasıl çalıştığını kısa bilgilerle keşfet.'
+  bilgi: 'Haftada birkaç kez Bilgi Kulesi’ne çık; zihnin nasıl çalıştığını kısa bilgilerle keşfet.',
+  huzur: 'Akşamları Huzur Tepesi’nde günün iyi giden üç şeyini yaz; günü olumlu bir notla kapat.'
 };
 
 const SURE_MESAJLARI = {

@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useReducer } from 'react';
 import { durumuKaydet, durumuSil, durumuYukle } from '../services/storage.js';
 import { BASLANGIC_JETONU, GOREV_BONUS_XP, GUNLUK_GOREVLER } from '../data/rewards.js';
-import { dunAnahtari, gunAnahtari, seviye } from './rules.js';
+import { GUNLUK_XP, dunAnahtari, gunAnahtari, seviye } from './rules.js';
 
 const bosGorevler = () => ({
   tarih: gunAnahtari(),
@@ -23,6 +23,7 @@ const ilkDurum = () => ({
   gorevler: bosGorevler(),
   sonOdul: null, // son biten bölümün ödül özeti (ödül ekranı için)
   plan: null, // başlangıçta hazırlanan kişisel plan { mesaj, adimlar, kaynak }
+  gunluk: [], // duygu günlüğü: [{ tarih: '2026-11-22', ruhHali: 1-5, duygular: [], not: '' }] (günde bir kayıt)
   tiklamalar: [] // affiliate tıklama kayıtları (ileride veritabanına gidecek)
 });
 
@@ -87,6 +88,14 @@ function reducer(durum, eylem) {
       return { ...d, xp: d.xp + eylem.xp, seri: seriyiGuncelle(d.seri), gorevler: { ...d.gorevler, ilerleme } };
     }
 
+    case 'GUNLUK_KAYDET': {
+      // Aynı gün tekrar yazılırsa kayıt güncellenir. Günün ilk kaydı +10 XP.
+      const k = { ...eylem.kayit, tarih: gunAnahtari() };
+      const ilkKayit = !d.gunluk.some((g) => g.tarih === k.tarih);
+      const gunluk = [...d.gunluk.filter((g) => g.tarih !== k.tarih), k].sort((a, b) => a.tarih.localeCompare(b.tarih)).slice(-120);
+      return { ...d, gunluk, xp: d.xp + (ilkKayit ? GUNLUK_XP : 0), seri: seriyiGuncelle(d.seri) };
+    }
+
     case 'PLAN_KAYDET':
       return { ...d, plan: eylem.plan };
 
@@ -110,6 +119,7 @@ function reducer(durum, eylem) {
 const OyunContext = createContext(null);
 
 export function OyunSaglayici({ children }) {
+  // Eski kayıtlarda olmayan alanlar ilkDurum'dan gelir (ör. sonradan eklenen gunluk)
   const [durum, gonder] = useReducer(reducer, null, () => gunuKontrolEt({ ...ilkDurum(), ...(durumuYukle() || {}) }));
 
   useEffect(() => {
@@ -122,6 +132,7 @@ export function OyunSaglayici({ children }) {
     esyaAl: (esya) => gonder({ tur: 'ESYA_AL', esya }),
     xpEkle: (xp, gorev) => gonder({ tur: 'XP_EKLE', xp, gorev }),
     planKaydet: (plan) => gonder({ tur: 'PLAN_KAYDET', plan }),
+    gunlukKaydet: (kayit) => gonder({ tur: 'GUNLUK_KAYDET', kayit }),
     tiklamaKaydet: (oneriId) => gonder({ tur: 'TIKLAMA_KAYDET', oneriId }),
     sifirla: () => {
       durumuSil();

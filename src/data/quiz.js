@@ -32,5 +32,29 @@ export const BILGI_KATLARI = [
     dogru: 2,
     kavram: '4-7-8 nefesi',
     aciklama: '4 saniye al, 7 saniye tut, 8 saniye ver. Uzun nefes vermek bedenin yavaşlamasına yardımcı olur.'
+  },
+  {
+    bilgi: 'Başkalarının ne düşündüğünü kanıt olmadan bildiğimizi sanmaya zihin okuma denir. Çoğu zaman en olumsuz ihtimali seçeriz.',
+    soru: 'Hangisi zihin okumaya örnektir?',
+    secenekler: [
+      'Hocam bugün selam vermedi, kesin benden hoşlanmıyor.',
+      'Hocam bugün çok yoğun görünüyordu.',
+      'Sorumu hocama e-postayla soracağım.'
+    ],
+    dogru: 0,
+    kavram: 'Zihin okuma',
+    aciklama: 'Selam vermemesinin pek çok nedeni olabilir. Kanıt olmadan "benden hoşlanmıyor" sonucuna atlamak zihin okumadır.'
+  },
+  {
+    bilgi: 'Duygusal çıkarımda bir şeyi hissediyorsak doğru olduğunu düşünürüz: "Kaygılıyım, demek ki bir şeyler ters gidecek." Duygular önemli bilgi verir ama kanıt değildir.',
+    soru: 'Bir düşünce tuzağıyla karşılaşınca hangi soru en yararlıdır?',
+    secenekler: [
+      'Bu hisse göre kesin olan ne?',
+      'Bu düşünceyi destekleyen ve desteklemeyen kanıtlar neler?',
+      'Bunu hiç düşünmemek için ne yapabilirim?'
+    ],
+    dogru: 1,
+    kavram: 'Kanıtları tartmak',
+    aciklama: 'Kanıtlara iki taraftan bakmak, düşünceyi bastırmadan daha dengeli bir hâle getirmeye yardım eder.'
   }
 ];

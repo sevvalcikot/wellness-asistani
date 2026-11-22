@@ -1,6 +1,7 @@
 // Huzur Adası haritasındaki bölümler. Sıra önemlidir: bir bölüm,
 // kendinden önceki bölüm tamamlanınca açılır.
 // x, y: haritadaki konum (390 x 560 boyutundaki harita çizimine göre).
+// Yeni bölüm eklerken yakinda: true yazarsan haritada kilitli "yakında" olarak görünür.
 export const BOLUMLER = [
   {
     id: 'tanisma',
@@ -38,7 +39,10 @@ export const BOLUMLER = [
   {
     id: 'huzur',
     ad: 'Huzur Tepesi',
-    yakinda: true, // henüz yapılmadı; sonraki geliştirme adımı
+    hedef: "Huzur Tepesi'ne",
+    davet: 'Bugünün güzel anlarını birlikte toplayalım!',
+    oyun: 'Üç Güzel Şey',
+    yol: '/oyun/huzur',
     x: 262, y: 104
   }
 ];

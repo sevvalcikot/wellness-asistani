@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { git } from '../router.js';
 import { useOyun } from '../state/GameContext.jsx';
 import { SEVIYE_BASINA_XP, seviye, seviyeIlerleme } from '../state/rules.js';
-import { Alev, Jeton, Kapat, NavHarita, NavOda, NavOyun } from './Icons.jsx';
+import { Alev, Jeton, Kapat, NavGunluk, NavHarita, NavOda, NavOyun } from './Icons.jsx';
 
 // Üst bilgi çubuğu: seviye, XP çubuğu, jeton ve seri
 export function Hud({ bilgiAc }) {
@@ -47,6 +47,7 @@ export function AltMenu({ aktif }) {
   const ogeler = [
     { id: 'harita', ad: 'Harita', simge: <NavHarita /> },
     { id: 'oyunlar', ad: 'Oyunlar', simge: <NavOyun /> },
+    { id: 'gunluk', ad: 'Günlük', simge: <NavGunluk /> },
     { id: 'oda', ad: 'Odam', simge: <NavOda /> }
   ];
   return (

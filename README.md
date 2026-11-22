@@ -42,6 +42,7 @@ Durdurmak için Terminal'de `Ctrl + C`.
 src/
 ├── data/                 ← İÇERİKLER: kod bilmeden genişletebileceğin yer
 │   ├── safety.js         Kriz ifadeleri listesi (güvenlik)
+│   ├── moods.js          Duygu günlüğündeki ruh hâlleri ve duygular
 │   ├── thoughts.js       Düşünce Avcısı kartları
 │   ├── quiz.js           Bilgi Kulesi soruları
 │   ├── levels.js         Haritadaki bölümler
@@ -54,6 +55,8 @@ src/
 │   ├── ThoughtGame.jsx   Düşünce Avcısı
 │   ├── BreathGame.jsx    Nefes Balonu (4-7-8 nefesi)
 │   ├── QuizGame.jsx      Bilgi Kulesi
+│   ├── GratitudeGame.jsx Huzur Tepesi: Üç Güzel Şey
+│   ├── MoodJournalScreen.jsx Duygu Günlüğü + son 7 günün grafiği
 │   ├── WinScreen.jsx     Bölüm sonu ödülleri
 │   ├── RoomScreen.jsx    Yol arkadaşının odası + dükkân + rozetler
 │   ├── GamesScreen.jsx   Oyunlar sekmesi + kişisel plan
@@ -91,6 +94,9 @@ public/
 | Düşünce Avcısı | doğru +20 XP, yanlış +5 XP, bölüm sonu +25 jeton | `screens/ThoughtGame.jsx` |
 | Nefes Balonu | tur başına +15 XP, +15 jeton | `screens/BreathGame.jsx` |
 | Bilgi Kulesi | doğru +30 XP, yanlış +10 XP, +20 jeton, 2 ipucu | `screens/QuizGame.jsx` |
+| Huzur Tepesi | fener başına +20 XP, +20 jeton | `screens/GratitudeGame.jsx` |
+| Duygu Günlüğü | günün ilk kaydı +10 XP | `state/rules.js` |
+| Düşünce Defteri | her kayıt +10 XP | `screens/JournalScreen.jsx` |
 | Günlük görevlerin hepsi | +50 XP bonus | `data/rewards.js` |
 
 **İlke: ödül var, ceza yok.** Yanlış cevap ya da kaçırılan gün hiçbir şey kaybettirmez. Jetonlar parayla satılmaz.
@@ -136,13 +142,9 @@ Sunumdaki sistem mimarisiyle aynı sırada:
 2. **Supabase'i bağla**
    - Kullanıcı girişi (kayıt / giriş).
    - `services/storage.js` içindeki iki fonksiyonu veritabanına yazacak şekilde değiştir.
-   - Tablolar: `kullanicilar`, `ilerleme`, `dusunce_kartlari`, `rozetler`, `affiliate_tiklamalar`.
-3. **Duygu günlüğü ve haftalık duygu grafiği** (gereksinim analizindeki zorunlu madde).
-4. **Affiliate**
+   - Tablolar: `kullanicilar`, `ilerleme`, `duygu_gunlugu`, `rozetler`, `affiliate_tiklamalar`.
+3. **Affiliate**
    - Bir mağazanın ortaklık programına katıl.
    - Takip kodlu bağlantıları `data/recommendations.js` içine yaz.
-5. **Huzur Tepesi**
-   - 5. bölümü tasarla.
-   - `data/levels.js` içinde `yakinda: true` satırını kaldır ve yeni oyun ekranını ekle.
 
 > Bu uygulama terapi ya da tıbbi tedavi yerine geçmez. Uygulama içindeki "?" düğmesinde bu bilgi ve acil durum (112) notu yer alır.

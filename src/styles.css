@@ -220,7 +220,7 @@ button.hap:disabled { opacity: .6; }
 
 .alt-menu {
   margin: 4px -18px 0; height: 70px; background: #FFFFFF; border-top: 3px solid var(--murekkep);
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
   padding-bottom: env(safe-area-inset-bottom);
 }
 .ekran > .alt-menu { margin: 0; }
@@ -466,3 +466,16 @@ svg .pat { transform-box: fill-box; transform-origin: center; }
   margin-top: 6px; text-align: center; font-family: var(--baslik-font); font-size: 44px; font-weight: 800;
   background: #FFE1D6; border: 3px solid var(--murekkep); border-radius: 18px; padding: 4px 0;
 }
+
+/* ---------- Duygu günlüğü ---------- */
+.ruh-halleri { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.ruh-hali {
+  background: #FFFFFF; border: 2px solid transparent; border-radius: 16px; padding: 6px 2px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; font-weight: 900; line-height: 1.15;
+  transition: transform .2s cubic-bezier(.3, 1.6, .5, 1);
+}
+.ruh-hali.secili { border-color: var(--murekkep); background: #FFF6D6; transform: translateY(-3px); box-shadow: 0 3px 0 var(--murekkep); }
+
+/* ---------- Huzur Tepesi ---------- */
+.fenerler { position: relative; display: flex; justify-content: center; gap: 22px; padding: 18px 0 4px; }
+input.metin-alani { resize: none; }

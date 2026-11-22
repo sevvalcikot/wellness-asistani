@@ -26,9 +26,9 @@ JSON biçimi:
 {"tuzak": true|false, "tuzakAdi": "tuzak adı ya da null", "aciklama": "1-2 cümlelik açıklama", "gercekci": "düşüncenin daha dengeli, gerçekçi bir hâli (birinci tekil şahısla) ya da null"}`;
 
 const PLAN_GOREVI = `Kullanıcı uygulamaya yeni başladı ve kısa bir soruyu yanıtladı. Ona kişisel bir başlangıç planı hazırla.
-Uygulamadaki oyunlar: "nefes" (Nefes Balonu: 4-7-8 nefes egzersizi), "dusunce" (Düşünce Avcısı: düşünce tuzaklarını yakalama), "bilgi" (Bilgi Kulesi: kısa psikoloji bilgileri ve sorular).
+Uygulamadaki oyunlar: "nefes" (Nefes Balonu: 4-7-8 nefes egzersizi), "dusunce" (Düşünce Avcısı: düşünce tuzaklarını yakalama), "bilgi" (Bilgi Kulesi: kısa psikoloji bilgileri ve sorular), "huzur" (Huzur Tepesi: günün iyi giden üç şeyini yazma).
 JSON biçimi:
-{"mesaj": "kullanıcıya 1-2 cümlelik sıcak bir karşılama", "adimlar": [{"oyun": "nefes|dusunce|bilgi", "metin": "bu oyunu neden ve ne sıklıkla oynamalı, tek cümle"}]}
+{"mesaj": "kullanıcıya 1-2 cümlelik sıcak bir karşılama", "adimlar": [{"oyun": "nefes|dusunce|bilgi|huzur", "metin": "bu oyunu neden ve ne sıklıkla oynamalı, tek cümle"}]}
 adimlar tam 3 öğe olsun; kullanıcının günlük süresine uygun olsun.`;
 
 function jsonAyikla(metin) {

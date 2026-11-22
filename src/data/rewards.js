@@ -12,6 +12,7 @@ export const ROZETLER = [
   { id: 'tuzak-avcisi', ad: 'Tuzak Avcısı', renk: '#FFE1D6', simge: 'tuzak', nasil: 'Bir oyunda en az 2 tuzak yakala' },
   { id: 'nefes-ustasi', ad: 'Nefes Ustası', renk: '#DFF0FF', simge: 'nefes', nasil: '4 nefes turunu tamamla' },
   { id: 'bilgi-kasifi', ad: 'Bilgi Kaşifi', renk: '#EEE8FF', simge: 'bilgi', nasil: 'Bilgi Kulesi’nde tüm soruları bil' },
+  { id: 'huzur-bulucu', ad: 'Huzur Bulucu', renk: '#FFE9C7', simge: 'huzur', nasil: 'Huzur Tepesi’nde üç feneri yak' },
   { id: 'yedi-gun', ad: '7 gün seri', renk: '#FFF0C7', simge: 'seri', nasil: '7 gün üst üste uygulamaya gel' }
 ];
 

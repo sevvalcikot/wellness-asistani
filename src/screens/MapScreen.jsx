@@ -39,7 +39,7 @@ export default function MapScreen() {
       <div className="konusma-balonu" role="status">
         {simdiki
           ? <>Bugün {simdiki.hedef} gidelim mi? {simdiki.davet}</>
-          : <>Harika gidiyorsun! Huzur Tepesi çok yakında açılacak. Bu arada oyunları tekrar oynayabilirsin.</>}
+          : <>Bütün adayı keşfettin! Oyunları istediğin zaman tekrar oynayabilir, Duygu Günlüğü'ne her gün yazabilirsin.</>}
         <div className="balon-imza">{arkadas.ad}</div>
       </div>
 

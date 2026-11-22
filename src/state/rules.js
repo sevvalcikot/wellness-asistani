@@ -1,6 +1,7 @@
 // Oyunun temel kuralları: seviye hesabı ve tarih yardımcıları.
 
 export const SEVIYE_BASINA_XP = 200;
+export const GUNLUK_XP = 10; // duygu günlüğüne günün ilk kaydı
 
 export const seviye = (xp) => Math.floor(xp / SEVIYE_BASINA_XP) + 1;
 export const seviyeIlerleme = (xp) => xp % SEVIYE_BASINA_XP;
@@ -27,4 +28,13 @@ export function karistir(dizi) {
     [k[i], k[j]] = [k[j], k[i]];
   }
   return k;
+}
+
+// Bugünden geriye doğru son n günün tarih anahtarları (en eski önce)
+export function sonGunler(n) {
+  return Array.from({ length: n }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (n - 1 - i));
+    return { anahtar: gunAnahtari(d), kisa: ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'][d.getDay()] };
+  });
 }

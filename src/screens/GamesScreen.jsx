@@ -9,7 +9,8 @@ import { bolumDurumu } from './MapScreen.jsx';
 const ACIKLAMALAR = {
   nefes: { metin: '4-7-8 nefesiyle balonu uçur, sakinleş.', renk: '#FFD9C2', simge: 'nefes' },
   dusunce: { metin: 'Düşünce tuzaklarını yakala, gerçekçi hâlini öğren.', renk: '#D7F5C8', simge: 'tuzak' },
-  bilgi: { metin: 'Kat kat çık, psikoloji hakkında yeni şeyler öğren.', renk: '#E4DCFF', simge: 'bilgi' }
+  bilgi: { metin: 'Kat kat çık, psikoloji hakkında yeni şeyler öğren.', renk: '#E4DCFF', simge: 'bilgi' },
+  huzur: { metin: 'Bugün iyi giden üç şeyi yaz, tepedeki fenerleri yak.', renk: '#FFE1CF', simge: 'huzur' }
 };
 
 export default function GamesScreen() {

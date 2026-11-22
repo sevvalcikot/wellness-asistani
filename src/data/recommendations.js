@@ -19,6 +19,12 @@ export const ONERILER = {
     magaza: 'Mağazada incele',
     url: ''
   },
+  huzur: {
+    id: 'kitap-pozitif-psikoloji',
+    baslik: 'Merak edersen: minnet ve pozitif psikoloji üzerine bir kitap',
+    magaza: 'Mağazada incele',
+    url: ''
+  },
   bilgi: {
     id: 'kitap-bdt-giris',
     baslik: 'Merak edersen: bilişsel davranışçı yaklaşıma giriş kitabı',

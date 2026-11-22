@@ -94,9 +94,21 @@ export const NavOyun = () => (
     <rect x="2" y="7" width="20" height="12" rx="5" /><path d="M7 11v4M5 13h4M16 12h.01M18 14h.01" />
   </svg>
 );
+export const NavGunluk = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect x="4" y="3" width="16" height="18" rx="3" /><path d="M8 8h8M8 12h8M8 16h5" />
+  </svg>
+);
 export const NavOda = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z" />
+  </svg>
+);
+
+export const Gunes = ({ boyut = 26 }) => (
+  <svg width={boyut} height={boyut} viewBox="0 0 24 24" fill="none" stroke="#E08A00" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="4.5" fill="#FFC233" />
+    <path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" />
   </svg>
 );
 
@@ -105,5 +117,6 @@ export const RozetSimgesi = ({ simge }) => {
   if (simge === 'tuzak') return <Tuzak />;
   if (simge === 'nefes') return <Ruzgar />;
   if (simge === 'bilgi') return <Bilgi />;
+  if (simge === 'huzur') return <Gunes />;
   return <Alev boyut={22} />;
 };
