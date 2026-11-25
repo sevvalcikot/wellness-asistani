@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Companion from '../components/Companion.jsx';
 import { git } from '../router.js';
 import { useOyun } from '../state/GameContext.jsx';
+import { SIFRE_SIFIRLAMA_AKTIF } from '../config.js';
 
 const SENKRON_METNI = {
   bekliyor: 'Bağlanıyor…',
@@ -155,7 +156,7 @@ export default function AccountScreen() {
               {mod === 'kayit' && <a className="metin-baglanti" href="#gizlilik">Aydınlatma metnini oku</a>}
               {mesaj && <div className={'kucuk-bildirim' + (mesaj.tur === 'hata' ? ' hata' : '')} role={mesaj.tur === 'hata' ? 'alert' : 'status'}>{mesaj.metin}</div>}
               <button type="submit" className="dugme birincil" disabled={bekliyor}>{bekliyor ? 'Bekle…' : mod === 'kayit' ? 'Hesap aç' : 'Giriş yap'}</button>
-              {mod === 'giris' && <button type="button" className="metin-dugme" onClick={() => { setMod('unuttum'); setMesaj(null); }}>Şifremi unuttum</button>}
+              {mod === 'giris' && SIFRE_SIFIRLAMA_AKTIF && <button type="button" className="metin-dugme" onClick={() => { setMod('unuttum'); setMesaj(null); }}>Şifremi unuttum</button>}
             </form>
             )}
           </section>
